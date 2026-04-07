@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+    .hero {
+        height: 100vh; display: flex; flex-direction: column;
+        justify-content: center; align-items: center; text-align: center; color: white;
+        background: linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0.55)),
+        url("{% static 'images/plane.jpg' %}") center/cover no-repeat fixed;
+        margin-top: -80px; /* ليتداخل مع الـ Navbar الشفاف */
+    }
+    .search-box { background: white; padding: 30px; border-radius: 25px; width: 90%; max-width: 900px; color: black; }
+</style>
+
+<div class="hero">
+    <h1 class="display-4 fw-bold">Welcome to SkyUp Travel ✨</h1>
+    <p class="lead">Touch The Sky</p>
+    <div class="search-box">
+        <div class="row g-2">
+            <div class="col-md-4"><input class="form-control" placeholder="Departure City"></div>
+            <div class="col-md-4"><input class="form-control" placeholder="Arrival City"></div>
+            <div class="col-md-4"><input type="date" class="form-control"></div>
+        </div>
+        <button class="btn btn-primary w-100 mt-3">Search Flights ✈️</button>
+    </div>
+</div>
+{% endblock %}

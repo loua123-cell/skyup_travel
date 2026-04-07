@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block content %}
+<div class="container mt-5 mb-5 text-center">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="mb-4">
+                <i class="fas fa-check-circle text-success fa-6x animate__animated animate__bounceIn"></i>
+            </div>
+
+            <h1 class="fw-bold mb-3">
+                {% if LANGUAGE_CODE == 'ar' %}تم الحجز بنجاح!{% elif LANGUAGE_CODE == 'fr' %}Réservation Réussie !{% else %}Booking Successful!{% endif %}
+            </h1>
+            
+            <p class="text-muted fs-5 mb-5">
+                {% if LANGUAGE_CODE == 'ar' %}شكراً لاختيارك سكاي أب. تم استلام طلبك وهو قيد المعالجة.{% else %}Merci d'avoir choisi SkyUp. Votre demande est en cours de traitement.{% endif %}
+            </p>
+
+            <div class="card border-0 shadow-sm rounded-4 bg-light p-4 mb-5">
+                <div class="d-flex justify-content-between mb-2">
+                    <span class="text-muted small">Numéro de Dossier:</span>
+                    <span class="fw-bold">#{{ booking.id }}</span>
+                </div>
+                <div class="d-flex justify-content-between mb-2">
+                    <span class="text-muted small">Service:</span>
+                    <span class="fw-bold">
+                        {% if booking.room %}{{ booking.room.hotel.name }}
+                        {% elif booking.flight %}{{ booking.flight.airline }}
+                        {% elif booking.car %}{{ booking.car.model }}
+                        {% endif %}
+                    </span>
+                </div>
+                <hr>
+                <div class="d-flex justify-content-between">
+                    <span class="text-muted">Total Paid:</span>
+                    <span class="h4 fw-bold text-primary mb-0">{{ booking.total_price }} TND</span>
+                </div>
+            </div>
+
+            <div class="d-grid gap-2 d-md-block">
+                <a href="{% url 'hotel_list' %}" class="btn btn-primary btn-lg rounded-pill px-5 me-md-2">
+                    {% if LANGUAGE_CODE == 'ar' %}العودة للرئيسية{% else %}Accueil{% endif %}
+                </a>
+                <button onclick="window.print()" class="btn btn-outline-secondary btn-lg rounded-pill px-5">
+                    <i class="fas fa-print me-2"></i> {% if LANGUAGE_CODE == 'ar' %}طباعة التذكرة{% else %}Imprimer{% endif %}
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

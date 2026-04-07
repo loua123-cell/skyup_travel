@@ -1,0 +1,104 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block content %}
+<div class="container mt-5 mb-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold">
+            <i class="fas fa-suitcase-rolling me-2 text-primary"></i>
+            {% if LANGUAGE_CODE == 'ar' %}حجوزاتي{% elif LANGUAGE_CODE == 'fr' %}Mes Réservations{% else %}My Bookings{% endif %}
+        </h2>
+        <span class="badge bg-primary rounded-pill px-3 py-2">
+            {{ reservations.count }} {% if LANGUAGE_CODE == 'ar' %}حجز{% else %}Dossiers{% endif %}
+        </span>
+    </div>
+
+    {% if reservations %}
+    <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="bg-light">
+                    <tr>
+                        <th class="ps-4">ID</th>
+                        <th>{% if LANGUAGE_CODE == 'ar' %}الخدمة{% else %}Service{% endif %}</th>
+                        <th>{% if LANGUAGE_CODE == 'ar' %}التاريخ{% else %}Dates{% endif %}</th>
+                        <th>{% if LANGUAGE_CODE == 'ar' %}السعر{% else %}Prix Total{% endif %}</th>
+                        <th>{% if LANGUAGE_CODE == 'ar' %}الحالة{% else %}Statut{% endif %}</th>
+                        <th class="text-center">{% if LANGUAGE_CODE == 'ar' %}إجراءات{% else %}Actions{% endif %}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for res in reservations %}
+                    <tr>
+                        <td class="ps-4 fw-bold text-muted">#{{ res.id }}</td>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                {% if res.room %}
+                                    <i class="fas fa-hotel text-primary me-2"></i> {{ res.room.hotel.name }}
+                                {% elif res.flight %}
+                                    <i class="fas fa-plane text-info me-2"></i> {{ res.flight.airline }}
+                                {% elif res.car %}
+                                    <i class="fas fa-car text-secondary me-2"></i> {{ res.car.model }}
+                                {% endif %}
+                            </div>
+                        </td>
+                        <td class="small">
+                            {{ res.start_date }} 
+                            {% if res.end_date %} <i class="fas fa-arrow-right mx-1 small"></i> {{ res.end_date }}{% endif %}
+                        </td>
+                        <td class="fw-bold text-dark">{{ res.total_price }} TND</td>
+                        <td>
+                            {% if res.status == 'PENDING' %}
+                                <span class="badge bg-warning-subtle text-warning px-3 rounded-pill">
+                                    {% if LANGUAGE_CODE == 'ar' %}قيد الانتظار{% elif LANGUAGE_CODE == 'fr' %}En attente{% else %}Pending{% endif %}
+                                </span>
+                            {% elif res.status == 'CONFIRMED' %}
+                                <span class="badge bg-success-subtle text-success px-3 rounded-pill">
+                                    {% if LANGUAGE_CODE == 'ar' %}مؤكد{% elif LANGUAGE_CODE == 'fr' %}Confirmée{% else %}Confirmed{% endif %}
+                                </span>
+                            {% else %}
+                                <span class="badge bg-danger-subtle text-danger px-3 rounded-pill">
+                                    {% if LANGUAGE_CODE == 'ar' %}ملغى{% elif LANGUAGE_CODE == 'fr' %}Annulée{% else %}Cancelled{% endif %}
+                                </span>
+                            {% endif %}
+                        </td>
+                        <td class="text-center">
+                            <div class="btn-group shadow-sm rounded-pill overflow-hidden">
+                                <a href="#" class="btn btn-sm btn-light border-end">
+                                    <i class="fas fa-eye text-primary"></i>
+                                </a>
+                                
+                                {% if res.status == 'PENDING' %}
+                                <a href="{% url 'cancel_booking' res.id %}" 
+                                   class="btn btn-sm btn-light" 
+                                   onclick="return confirm('{% if LANGUAGE_CODE == 'ar' %}هل أنت متأكد من إلغاء هذا الحجز؟{% else %}Voulez-vous vraiment annuler ?{% endif %}')">
+                                    <i class="fas fa-trash text-danger"></i>
+                                </a>
+                                {% endif %}
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% else %}
+    <div class="text-center py-5">
+        <img src="https://cdn-icons-png.flaticon.com/512/4076/4076432.png" width="120" class="mb-4 opacity-50" alt="No bookings">
+        <h4 class="text-muted">
+            {% if LANGUAGE_CODE == 'ar' %}لا توجد حجوزات بعد{% elif LANGUAGE_CODE == 'fr' %}Aucune réservation trouvée{% else %}No bookings found{% endif %}
+        </h4>
+        <a href="{% url 'hotel_list' %}" class="btn btn-primary mt-3 rounded-pill px-4 fw-bold shadow-sm">
+            {% if LANGUAGE_CODE == 'ar' %}ابدأ رحلتك الآن{% elif LANGUAGE_CODE == 'fr' %}Réserver maintenant{% else %}Start your journey{% endif %}
+        </a>
+    </div>
+    {% endif %}
+</div>
+
+<style>
+    .bg-warning-subtle { background-color: #fff3cd !important; color: #856404 !important; }
+    .bg-success-subtle { background-color: #d1e7dd !important; color: #0f5132 !important; }
+    .bg-danger-subtle { background-color: #f8d7da !important; color: #842029 !important; }
+</style>
+{% endblock %}

@@ -1,0 +1,125 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="text-center mb-5">
+        <h1 class="fw-bold display-5 text-dark">
+            🏨 {% trans "Explorez les Hôtels" %}
+        </h1>
+        <p class="lead text-muted">
+            {% trans "Les meilleures offres en Tunisie et ailleurs" %}
+        </p>
+    </div>
+
+    <div class="row mb-5 justify-content-center">
+        <div class="col-md-10">
+            <form method="GET" action="{% url 'hotel_list' %}" class="bg-white p-4 shadow-sm rounded-4 border">
+                <div class="row g-3">
+                    <div class="col-md-12">
+                        <div class="input-group mb-3 rounded-pill overflow-hidden border">
+                            <span class="input-group-text bg-white border-0"><i class="fas fa-search text-muted"></i></span>
+                            <input type="text" name="q" class="form-control border-0 shadow-none" 
+                                   placeholder="{% trans 'Rechercher un hôtel ou une ville...' %}" 
+                                   value="{{ request.GET.q }}">
+                        </div>
+                    </div>
+
+                    <div class="col-md-3">
+                        <label class="small fw-bold text-muted mb-2"><i class="fas fa-user me-1"></i> {% trans "Adultes" %}</label>
+                        <select name="adults" class="form-select border rounded-pill bg-light shadow-none">
+                            <option value="1" {% if request.GET.adults == '1' %}selected{% endif %}>1 {% trans "Adulte" %}</option>
+                            <option value="2" {% if not request.GET.adults or request.GET.adults == '2' %}selected{% endif %}>2 {% trans "Adultes" %}</option>
+                            <option value="3" {% if request.GET.adults == '3' %}selected{% endif %}>3 {% trans "Adultes" %}</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-3">
+                        <label class="small fw-bold text-muted mb-2"><i class="fas fa-child me-1"></i> {% trans "Enfants" %}</label>
+                        <select name="children" class="form-select border rounded-pill bg-light shadow-none">
+                            <option value="0" {% if request.GET.children == '0' %}selected{% endif %}>0 {% trans "Enfant" %}</option>
+                            <option value="1" {% if request.GET.children == '1' %}selected{% endif %}>1 {% trans "Enfant" %}</option>
+                            <option value="2" {% if request.GET.children == '2' %}selected{% endif %}>2 {% trans "Enfants" %}</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-3">
+                        <label class="small fw-bold text-muted mb-2"><i class="fas fa-baby me-1"></i> {% trans "Bébés" %}</label>
+                        <select name="babies" class="form-select border rounded-pill bg-light shadow-none">
+                            <option value="0" {% if request.GET.babies == '0' %}selected{% endif %}>0 {% trans "Bébé" %}</option>
+                            <option value="1" {% if request.GET.babies == '1' %}selected{% endif %}>1 {% trans "Bébé" %}</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-3 d-flex align-items-end">
+                        <button type="submit" class="btn btn-primary w-100 rounded-pill fw-bold py-2 shadow-sm">
+                            <i class="fas fa-search me-2"></i> {% trans "Rechercher" %}
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="row">
+        {% for hotel in hotels %}
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 shadow-sm border-0 rounded-4 overflow-hidden transition-hover">
+                <div class="position-relative">
+                    {% if hotel.image %}
+                        <img src="{{ hotel.image.url }}" class="card-img-top" style="height: 220px; object-fit: cover;" alt="{{ hotel.name }}">
+                    {% else %}
+                        <div class="bg-light d-flex align-items-center justify-content-center" style="height: 220px;">
+                            <i class="fas fa-hotel fa-4x text-secondary opacity-25"></i>
+                        </div>
+                    {% endif %}
+                    
+                    <div class="position-absolute top-0 {% if LANGUAGE_CODE == 'ar' %}start-0{% else %}end-0{% endif %} m-3 badge bg-white text-warning shadow-sm px-2 py-1">
+                        {{ hotel.stars }} <i class="fas fa-star"></i>
+                    </div>
+                </div>
+
+                <div class="card-body p-4">
+                    <h5 class="card-title fw-bold text-dark">{{ hotel.name }}</h5>
+                    <p class="card-text text-muted small mb-4">
+                        <i class="fas fa-map-marker-alt text-primary me-1"></i> {{ hotel.city }}<br>
+                        {{ hotel.description|truncatewords:10 }}
+                    </p>
+                    
+                    <div class="d-flex justify-content-between align-items-center border-top pt-3">
+                        <div>
+                            <span class="h5 fw-bold text-primary">{{ hotel.price_per_night|floatformat:0 }}</span>
+                            <small class="text-muted">TND / {% trans "nuit" %}</small>
+                        </div>
+                        <a href="{% url 'hotel_detail' hotel.pk %}" class="btn btn-outline-primary rounded-pill px-4 fw-bold">
+                            {% trans "Détails" %}
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12 text-center py-5">
+            <div class="alert alert-light border p-5">
+                <i class="fas fa-search fa-3x text-muted mb-3"></i>
+                <p class="h4 text-muted">{% trans "Aucun hôtel disponible pour le moment." %}</p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<style>
+    .transition-hover {
+        transition: all 0.3s ease;
+    }
+    .transition-hover:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 15px 30px rgba(0,0,0,0.12) !important;
+    }
+    .form-select:focus, .form-control:focus {
+        border-color: #007bff;
+        box-shadow: none;
+    }
+</style>
+{% endblock %}

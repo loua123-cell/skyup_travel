@@ -1,0 +1,60 @@
+{% extends "admin/base.html" %}
+
+{% block extrastyle %}
+{{ block.super }}
+<style>
+    /* 1. Configuration globale du Header (Blanc) */
+    #header {
+        background: #FFFFFF !important;
+        color: #1E3A8A !important;
+        border-bottom: 3px solid #F59E0B !important; /* Ligne de séparation orange */
+    }
+
+    /* 2. Logo SkyUp Travel */
+    .sky-part { color: #4DA6FF !important; font-weight: bold; }
+    .up-part { color: #F59E0B !important; font-weight: bold; }
+    .travel-part { color: #1E3A8A !important; font-weight: bold; }
+
+    /* 3. Harmonisation des modules (Cars, Auth, etc.) */
+    /* Change la couleur des barres de titre des modules */
+    .module h2, .module caption, .inline-group h2 {
+        background: #1E3A8A !important; /* Bleu Foncé SkyUp */
+        color: #FFFFFF !important;
+    }
+
+    /* 4. Personnalisation des liens et boutons */
+    div.breadcrumbs {
+        background: #f8f9fa !important;
+        color: #1E3A8A !important;
+    }
+
+    a:link, a:visited {
+        color: #1E3A8A; /* Liens en bleu foncé */
+    }
+
+    /* Boutons d'action (Enregistrer, etc.) en Orange SkyUp */
+    .submit-row input, .button, .default {
+        background: #F59E0B !important;
+        color: white !important;
+        border: none !important;
+        text-transform: uppercase;
+        font-weight: bold;
+    }
+
+    /* 5. Ajustement de la barre latérale et des textes */
+    #user-tools { color: #333 !important; }
+    #user-tools a { color: #4DA6FF !important; } /* Liens utilisateur en bleu ciel */
+
+    caption a {
+        color: #FFFFFF !important; /* Pour que les liens dans les titres de modules soient blancs */
+    }
+</style>
+{% endblock %}
+
+{% block branding %}
+<h1 id="site-name">
+    <a href="{% url 'admin:index' %}">
+        <span class="sky-part">Sky</span><span class="up-part">Up</span><span class="travel-part">Travel</span>
+    </a>
+</h1>
+{% endblock %}

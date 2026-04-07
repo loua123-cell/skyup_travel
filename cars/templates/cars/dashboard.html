@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block content %}
+{% trans "Voulez-vous vraiment supprimer ?" as delete_confirm_msg %}
+
+<div class="container mt-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold text-dark">
+            <i class="fas fa-chart-line text-primary me-2"></i> {% trans "Tableau de Bord" %}
+        </h2>
+        <span class="badge bg-primary rounded-pill px-3 py-2">
+            {{ bookings.count }} {% trans "Réservations" %}
+        </span>
+    </div>
+
+    <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="bg-light">
+                    <tr>
+                        <th class="ps-4 py-3">{% trans "Client" %}</th>
+                        <th>{% trans "Véhicule" %}</th>
+                        <th>{% trans "Période" %}</th>
+                        <th>{% trans "Contact" %}</th>
+                        <th class="text-center">{% trans "Actions" %}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for booking in bookings %}
+                    <tr>
+                        <td class="ps-4">
+                            <div class="fw-bold text-dark">{{ booking.customer_name }}</div>
+                        </td>
+                        <td>
+                            <span class="badge border text-primary px-3">
+                                {{ booking.car.brand }} {{ booking.car.model_name }}
+                            </span>
+                        </td>
+                        <td>
+                            <small class="text-muted">
+                                {{ booking.start_date }} <i class="fas fa-arrow-right mx-1"></i> {{ booking.end_date }}
+                            </small>
+                        </td>
+                        <td>
+                            <a href="tel:{{ booking.customer_phone }}" class="text-decoration-none text-dark">
+                                <i class="fas fa-phone-alt me-1 text-success"></i> {{ booking.customer_phone }}
+                            </a>
+                        </td>
+                        <td class="text-center">
+                            <a href="{% url 'cars:delete_booking' booking.pk %}" 
+                               class="btn btn-sm btn-light text-danger rounded-pill border px-3"
+                               onclick="return confirm('{{ delete_confirm_msg|escapejs }}')">
+                                <i class="fas fa-trash-alt"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="text-center py-5 text-muted">
+                            {% trans "Aucune réservation." %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,92 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block content %}
+<div class="container mt-5 mb-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card shadow-lg border-0 rounded-4 overflow-hidden">
+                <div class="bg-primary p-4 text-white text-center">
+                    <h2 class="fw-bold mb-1">
+                        {% if LANGUAGE_CODE == 'ar' %}تأكيد الحجز{% elif LANGUAGE_CODE == 'fr' %}Confirmation de Réservation{% else %}Confirm Your Booking{% endif %}
+                    </h2>
+                    <p class="mb-0 opacity-75 small">SkyUp Travel - Fast & Secure</p>
+                </div>
+                
+                <div class="card-body p-4 p-lg-5">
+                    <div class="d-flex align-items-center mb-4 p-3 bg-light rounded-4 border-start border-primary border-4">
+                        <div class="me-3">
+                            <i class="fas fa-hotel fa-2x text-primary"></i>
+                        </div>
+                        <div>
+                            <h5 class="fw-bold mb-0 text-dark">{{ room.hotel.name }}</h5>
+                            <span class="text-muted small">
+                                {{ room.get_room_type_display }} — 
+                                <span class="text-success fw-bold">{{ room.price_per_night }} TND</span> / {% if LANGUAGE_CODE == 'ar' %}ليلة{% else %}nuit{% endif %}
+                            </span>
+                        </div>
+                    </div>
+
+                    <form method="post" class="needs-validation">
+                        {% csrf_token %}
+                        
+                        <div class="row g-4">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold text-secondary small text-uppercase">
+                                    <i class="far fa-calendar-check me-1"></i>
+                                    {% if LANGUAGE_CODE == 'ar' %}تاريخ الدخول{% elif LANGUAGE_CODE == 'fr' %}Date d'arrivée{% else %}Check-in Date{% endif %}
+                                </label>
+                                {{ form.start_date }}
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold text-secondary small text-uppercase">
+                                    <i class="far fa-calendar-times me-1"></i>
+                                    {% if LANGUAGE_CODE == 'ar' %}تاريخ الخروج{% elif LANGUAGE_CODE == 'fr' %}Date de départ{% else %}Check-out Date{% endif %}
+                                </label>
+                                {{ form.end_date }}
+                            </div>
+                        </div>
+
+                        <div class="mt-4 p-3 border rounded-3 bg-white text-center">
+                            <p class="text-muted mb-0 small">
+                                {% if LANGUAGE_CODE == 'ar' %}سيتم حساب السعر الإجمالي بناءً على عدد الليالي{% else %}Le prix total sera calculé selon le nombre de nuits{% endif %}
+                            </p>
+                        </div>
+
+                        <div class="mt-5">
+                            <button type="submit" class="btn btn-primary btn-lg w-100 rounded-pill shadow fw-bold py-3 mb-3">
+                                {% if LANGUAGE_CODE == 'ar' %}إتمام الحجز الآن{% elif LANGUAGE_CODE == 'fr' %}Finaliser la réservation{% else %}Complete Booking Now{% endif %}
+                            </button>
+                            
+                            <a href="{% url 'hotel_detail' room.hotel.pk %}" class="btn btn-link w-100 text-muted text-decoration-none">
+                                <i class="fas fa-arrow-left me-1"></i>
+                                {% if LANGUAGE_CODE == 'ar' %}العودة لتفاصيل الفندق{% else %}Retour aux détails{% endif %}
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <div class="text-center mt-4">
+                <span class="badge bg-success-subtle text-success p-2 px-3 rounded-pill border border-success">
+                    <i class="fas fa-lock me-1"></i> 
+                    {% if LANGUAGE_CODE == 'ar' %}دفع آمن عند الوصول{% else %}Paiement sécurisé à l'arrivée{% endif %}
+                </span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    input[type="date"] {
+        border-radius: 50px !important;
+        padding: 12px 20px !important;
+        border: 1px solid #dee2e6;
+    }
+    input[type="date"]:focus {
+        border-color: #0d6efd;
+        box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.15);
+    }
+</style>
+{% endblock %}

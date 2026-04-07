@@ -1,0 +1,160 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block content %}
+<style>
+    /* Fix pour la barre de navigation et le z-index */
+    header, .navbar, .barriere-top {
+        position: sticky !important;
+        top: 0;
+        z-index: 9999 !important; /* Priorité maximale pour rester au-dessus */
+        background: #1a1a1a; 
+    }
+
+    /* Le contenu de la page doit rester en dessous du header */
+    .page-content, .container {
+        position: relative;
+        z-index: 1;
+    }
+
+    /* Style pour les cartes des chambres */
+    .card {
+        z-index: 10;
+        position: relative;
+    }
+
+    /* Barre latérale collante (Sticky Sidebar) */
+    .sticky-sidebar {
+        position: sticky;
+        top: 100px; 
+        z-index: 100;
+    }
+
+    /* Assurer que les contrôles du carousel sont visibles */
+    .carousel-control-prev, .carousel-control-next {
+        z-index: 15;
+    }
+</style>
+
+<div class="container mt-5 mb-5">
+    <div class="row g-4">
+        <div class="col-md-8">
+            <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-4">
+                {% if hotel.image %}
+                    <img src="{{ hotel.image.url }}" class="img-fluid w-100" style="height: 450px; object-fit: cover;" alt="{{ hotel.name }}">
+                {% else %}
+                    <div class="bg-light p-5 text-center"><i class="fas fa-hotel fa-5x text-muted"></i></div>
+                {% endif %}
+                
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h1 class="fw-bold mb-0">{{ hotel.name }}</h1>
+                        <div class="text-warning">
+                            {% for i in "12345"|make_list %}
+                                {% if forloop.counter <= hotel.stars %}
+                                    <i class="fas fa-star"></i>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <p class="text-muted">
+                        <i class="fas fa-map-marker-alt text-primary me-2"></i> 
+                        {{ hotel.city }}, {{ hotel.country }}
+                    </p>
+                    
+                    <hr>
+                    <h4 class="fw-bold">{% if LANGUAGE_CODE == 'ar' %}الوصف{% else %}Description{% endif %}</h4>
+                    <p class="text-secondary">{{ hotel.description }}</p>
+
+                    <h4 class="fw-bold mt-5 mb-3">{% if LANGUAGE_CODE == 'ar' %}الغرف المتاحة{% else %}Chambres Disponibles{% endif %}</h4>
+                    
+                    <div class="d-flex flex-column gap-3">
+                        {% for room in rooms %}
+                        <div class="card border shadow-sm rounded-3 overflow-hidden">
+                            <div class="row g-0">
+                                <div class="col-md-5">
+                                    {% if room.images.all %}
+                                        <div id="carouselRoom{{ room.id }}" class="carousel slide h-100" data-bs-ride="false">
+                                            <div class="carousel-inner h-100">
+                                                {% for room_img in room.images.all %}
+                                                    <div class="carousel-item h-100 {% if forloop.first %}active{% endif %}">
+                                                        <img src="{{ room_img.image.url }}" class="d-block w-100 h-100" style="object-fit: cover; min-height: 200px;" alt="{{ room.room_type }}">
+                                                    </div>
+                                                {% endfor %}
+                                            </div>
+                                            <button class="carousel-control-prev" type="button" data-bs-target="#carouselRoom{{ room.id }}" data-bs-slide="prev">
+                                                <span class="carousel-control-prev-icon"></span>
+                                            </button>
+                                            <button class="carousel-control-next" type="button" data-bs-target="#carouselRoom{{ room.id }}" data-bs-slide="next">
+                                                <span class="carousel-control-next-icon"></span>
+                                            </button>
+                                        </div>
+                                    {% else %}
+                                        <div class="bg-light h-100 d-flex align-items-center justify-content-center text-muted" style="min-height: 200px;">
+                                            <i class="fas fa-image fa-2x"></i>
+                                        </div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="col-md-7">
+                                    <div class="card-body d-flex flex-column justify-content-between h-100">
+                                        <div>
+                                            <h5 class="fw-bold mb-1">{{ room.get_room_type_display }}</h5>
+                                            <div class="small text-muted mb-2">
+                                                <i class="fas fa-users me-1"></i> 
+                                                {% if LANGUAGE_CODE == 'ar' %}
+                                                    {{ room.max_adults }} بالغين, {{ room.max_children }} أطفال
+                                                {% else %}
+                                                    {{ room.max_adults }} Adultes, {{ room.max_children }} Enfants
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                        <div class="d-flex justify-content-between align-items-center mt-3">
+                                            <span class="text-success fw-bold fs-5">{{ room.price_per_night }} TND</span>
+                                            <a href="{% url 'book_room' room.id %}" class="btn btn-primary rounded-pill px-4 fw-bold shadow-sm">
+                                                {% if LANGUAGE_CODE == 'ar' %}اختيار{% else %}Sélectionner{% endif %}
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% empty %}
+                        <p class="text-muted p-3 text-center bg-light rounded">
+                            {% if LANGUAGE_CODE == 'ar' %}لا توجد غرف متاحة حالياً.{% else %}Aucune chambre disponible.{% endif %}
+                        </p>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card shadow border-0 p-4 rounded-4 sticky-sidebar">
+                <h3 class="text-primary fw-bold mb-1">{{ hotel.price_per_night }} TND</h3>
+                <p class="text-muted small">{% if LANGUAGE_CODE == 'ar' %}ابتداءً من / ليلة{% else %}à partir de / nuit{% endif %}</p>
+                
+                <div class="my-4">
+                    <h6 class="fw-bold mb-3">{% if LANGUAGE_CODE == 'ar' %}المرافق والخدمات:{% else %}Équipements & Services:{% endif %}</h6>
+                    <div class="d-flex flex-column gap-2">
+                        <div class="{% if hotel.has_wifi %}text-success{% else %}text-muted opacity-50 text-decoration-line-through{% endif %}">
+                            <i class="fas fa-wifi me-2"></i> {% if LANGUAGE_CODE == 'ar' %}واي فاي مجاني{% else %}WiFi gratuit{% endif %}
+                        </div>
+                        <div class="{% if hotel.has_pool %}text-success{% else %}text-muted opacity-50 text-decoration-line-through{% endif %}">
+                            <i class="fas fa-swimming-pool me-2"></i> {% if LANGUAGE_CODE == 'ar' %}مسبح{% else %}Piscine{% endif %}
+                        </div>
+                        <div class="{% if hotel.has_parking %}text-success{% else %}text-muted opacity-50 text-decoration-line-through{% endif %}">
+                            <i class="fas fa-parking me-2"></i> {% if LANGUAGE_CODE == 'ar' %}موقف سيارات{% else %}Parking gratuit{% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <hr>
+                <button class="btn btn-primary btn-lg w-100 rounded-pill shadow-sm fw-bold">
+                    {% if LANGUAGE_CODE == 'ar' %}احجز الآن{% else %}Réserver maintenant{% endif %}
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

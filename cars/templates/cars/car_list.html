@@ -1,0 +1,127 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="text-center mb-5">
+        <h1 class="fw-bold display-5 text-dark">
+            🚗 {% trans "Trouvez votre voiture idéale" %}
+        </h1>
+        <p class="lead text-muted">
+            {% trans "Choisissez la catégorie qui correspond à votre budget et vos besoins" %}
+        </p>
+    </div>
+
+    <div class="row justify-content-center mb-5">
+        <div class="col-md-10 text-center">
+            <form method="GET" action="." class="d-flex flex-wrap justify-content-center gap-2">
+                <a href="?" class="btn {% if not request.GET.category %}btn-primary{% else %}btn-outline-primary{% endif %} rounded-pill px-4 shadow-sm">
+                    {% trans "Tout" %}
+                </a>
+
+                <button type="submit" name="category" value="petit" class="btn {% if request.GET.category == 'petit' %}btn-success{% else %}btn-outline-success{% endif %} rounded-pill px-4 shadow-sm">
+                    <i class="fas fa-leaf me-1"></i> 
+                    {% trans "Économique" %} (< 150 DT)
+                </button>
+
+                <button type="submit" name="category" value="moyen" class="btn {% if request.GET.category == 'moyen' %}btn-info text-white{% else %}btn-outline-info{% endif %} rounded-pill px-4 shadow-sm">
+                    <i class="fas fa-couch me-1"></i> 
+                    {% trans "Confort" %} (150 - 400 DT)
+                </button>
+
+                <button type="submit" name="category" value="luxe" class="btn {% if request.GET.category == 'luxe' %}btn-dark{% else %}btn-outline-dark{% endif %} rounded-pill px-4 shadow-sm">
+                    <i class="fas fa-crown me-1 text-warning"></i> 
+                    {% trans "Luxe & SUV" %} (> 400 DT)
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div class="row">
+        {% for car in cars %}
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="card h-100 shadow-sm border-0 rounded-4 transition-hover overflow-hidden">
+                <div class="position-relative">
+                    {% if car.image %}
+                        <img src="{{ car.image.url }}" class="card-img-top" style="height: 220px; object-fit: cover;" alt="{{ car.brand }}">
+                    {% else %}
+                        <div class="bg-light d-flex align-items-center justify-content-center" style="height: 220px;">
+                            <i class="fas fa-car fa-4x text-secondary opacity-25"></i>
+                        </div>
+                    {% endif %}
+                    
+                    <div class="position-absolute bottom-0 {% if LANGUAGE_CODE == 'ar' %}end-0{% else %}start-0{% endif %} m-3 bg-white px-3 py-1 rounded-pill shadow-sm border">
+                        <span class="fw-bold text-success">{{ car.price_per_day|floatformat:0 }}</span>
+                        <small class="text-muted">TND / {% trans "jour" %}</small>
+                    </div>
+                </div>
+
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <h5 class="card-title fw-bold text-dark m-0">{{ car.brand }} {{ car.model_name }}</h5>
+                        
+                        {% if car.price_per_day < 150 %}
+                            <span class="badge rounded-pill bg-success opacity-75">{% trans "Petit" %}</span>
+                        {% elif car.price_per_day <= 400 %}
+                            <span class="badge rounded-pill bg-info opacity-75">{% trans "Moyen" %}</span>
+                        {% else %}
+                            <span class="badge rounded-pill bg-dark">{% trans "Luxe" %}</span>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="row g-2 mb-4 mt-3">
+                        <div class="col-6">
+                            <div class="p-2 border rounded bg-light text-center small">
+                                <i class="fas fa-cog text-primary me-1"></i> 
+                                {% if car.transmission == 'MANUAL' %}
+                                    {% trans "Manuelle" %}
+                                {% else %}
+                                    {% trans "Automatique" %}
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="p-2 border rounded bg-light text-center small">
+                                <i class="fas fa-gas-pump text-primary me-1"></i>
+                                {% if car.fuel_type == 'GASOLINE' %}
+                                    {% trans "Essence" %}
+                                {% else %}
+                                    {{ car.fuel_type }}
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="d-grid mt-3">
+                        <a href="{% url 'cars:car_detail' car.pk %}" class="btn btn-outline-primary rounded-pill py-2 fw-bold shadow-sm transition-btn">
+                            <i class="fas fa-calendar-check me-1"></i>
+                            {% trans "Réserver maintenant" %}
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12 text-center py-5">
+            <div class="alert alert-light border shadow-sm p-5">
+                <i class="fas fa-search fa-3x text-muted mb-3"></i>
+                <p class="h4 text-muted">{% trans "Aucune voiture trouvée." %}</p>
+                <a href="?" class="btn btn-primary mt-3">{% trans "Voir tout" %}</a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<style>
+    .transition-hover:hover {
+        transform: translateY(-8px);
+        transition: all 0.3s ease-in-out;
+        box-shadow: 0 15px 30px rgba(0,0,0,0.12) !important;
+    }
+    .transition-btn:hover {
+        background-color: #0d6efd !important;
+        color: white !important;
+    }
+</style>
+{% endblock %}
