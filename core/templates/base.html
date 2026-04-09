@@ -1,192 +1,492 @@
 {% load i18n %}
-<!DOCTYPE html>
-<html lang="{{ LANGUAGE_CODE }}" dir="{% if LANGUAGE_CODE == 'ar' %}rtl{% else %}ltr{% endif %}">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!doctype html>
+<html
+  lang="{{ LANGUAGE_CODE }}"
+  dir="{% if LANGUAGE_CODE == 'ar' %}rtl{% else %}ltr{% endif %}"
+>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>SkyUp Travel | Touch The Sky</title>
-    
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&family=Cairo:wght@400;700&display=swap" rel="stylesheet">
-    
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&family=Cairo:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
     {% if LANGUAGE_CODE == 'ar' %}
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.rtl.min.css">
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.rtl.min.css"
+    />
     {% endif %}
-    
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-   <style>
-    :root {
-        {% if LANGUAGE_CODE == 'ar' %}
-            --main-font: 'Cairo', sans-serif;
-        {% else %}
-            --main-font: 'Poppins', sans-serif;
-        {% endif %}
-        --primary-color: #0d6efd;
-    }
-    
-    /* Styles Généraux */
-    body {
-        font-family: var(--main-font);
-        background-color: #f4f7f6;
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+
+    <style>
+      :root {
+          {% if LANGUAGE_CODE == 'ar' %}
+              --main-font: 'Cairo', sans-serif;
+          {% else %}
+              --main-font: 'Poppins', sans-serif;
+          {% endif %}
+          --primary-color: #0d6efd;
+      }
+
+      /* Styles Généraux */
+      body {
+          font-family: var(--main-font);
+          background-color: #f4f7f6;
+          display: flex;
+          flex-direction: column;
+          min-height: 100vh;
+          margin: 0;
+      }
+
+      /* Transition pour les boutons */
+      .transition-btn {
+          transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+      }
+      .transition-btn:hover {
+          transform: translateY(-3px) !important;
+          box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15) !important;
+      }
+      .transition-btn:active {
+          transform: scale(0.95) !important;
+      }
+
+      /* Navbar & Navigation - FIX: Z-INDEX AUGMENTÉ */
+      .navbar {
+          background: #FFFFFF !important;
+          color: #1E3A8A !important;
+          border-bottom: 3px solid #F59E0B !important;
+          backdrop-filter: blur(10px);
+          padding: 15px 0;
+          z-index: 2000 !important; /* Priorité maximale sur les cartes */
+          position: sticky;
+          top: 0;
+      }
+
+      /* Correction pour la barre de langues/recherche si elle est séparée */
+      .barriere-top, .language-selector {
+          z-index: 2001 !important;
+          position: relative;
+      }
+
+      .nav-link { color: #1E3A8A !important; font-weight: 500; transition: 0.3s; }
+      .nav-link:hover { color: #F59E0B !important; }
+
+      /* Barre de recherche */
+      .nav-search .input-group {
+          background: #f8f9fa;
+          border-radius: 25px;
+          overflow: hidden;
+          border: 1px solid #ddd;
+      }
+      .nav-search .form-control { background: transparent; border: none; color: #1E3A8A; }
+      .nav-search .form-control::placeholder { color: #999; }
+
+      /* Animations de contenu - FIX: Z-INDEX INFÉRIEUR */
+      .page-content {
+          flex: 1;
+          animation: fadeIn 0.8s ease-in;
+          position: relative;
+          z-index: 1; /* Reste sous la navbar */
+      }
+
+      @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(10px); }
+          to { opacity: 1; transform: translateY(0); }
+      }
+
+      /* Alertes flottantes */
+      .alert-messages { position: fixed; top: 80px; right: 20px; z-index: 1050; min-width: 300px; }
+
+      /* Correction globale pour les cartes de chambres */
+      .card {
+          z-index: 10; /* Doit être inférieur à la navbar (2000) */
+      }
+
+      /* Footer Styles */
+      .footer-section {
+        background: linear-gradient(135deg, #1E3A8A 0%, #0F172A 100%);
+        color: white;
+        padding: 60px 20px 30px;
+        width: 100vw;
+        margin-left: calc(-50vw + 50%);
+      }
+      .footer-container {
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+      .footer-content {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 40px;
+        margin-bottom: 40px;
+      }
+      .footer-column h4 {
+        font-size: 1.2rem;
+        margin-bottom: 20px;
+        font-weight: bold;
+        color: #F59E0B;
+      }
+      .footer-column ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+      .footer-column ul li {
+        margin-bottom: 12px;
+      }
+      .footer-column ul li a {
+        color: #e0e7ff;
+        text-decoration: none;
+        transition: color 0.3s ease;
+      }
+      .footer-column ul li a:hover {
+        color: #F59E0B;
+      }
+      .footer-column p {
+        color: #e0e7ff;
+        font-size: 0.95rem;
+        line-height: 1.8;
+      }
+      .social-links {
         display: flex;
-        flex-direction: column; 
-        min-height: 100vh;
-        margin: 0; 
-    }
-
-    /* Transition pour les boutons */
-    .transition-btn {
-        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-    }
-    .transition-btn:hover {
-        transform: translateY(-3px) !important;
-        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15) !important;
-    }
-    .transition-btn:active {
-        transform: scale(0.95) !important;
-    }
-
-    /* Navbar & Navigation - FIX: Z-INDEX AUGMENTÉ */
-    .navbar { 
-        background: rgba(26, 26, 26, 0.95) !important; 
-        backdrop-filter: blur(10px); 
-        padding: 15px 0; 
-        z-index: 2000 !important; /* Priorité maximale sur les cartes */
-        position: sticky; 
-        top: 0;
-    }
-    
-    /* Correction pour la barre de langues/recherche si elle est séparée */
-    .barriere-top, .language-selector {
-        z-index: 2001 !important;
-        position: relative;
-    }
-
-    .nav-link { color: rgba(255,255,255,0.8) !important; font-weight: 500; transition: 0.3s; }
-    .nav-link:hover { color: var(--primary-color) !important; }
-    
-    /* Barre de recherche */
-    .nav-search .input-group { 
-        background: rgba(255, 255, 255, 0.1); 
-        border-radius: 25px; 
-        overflow: hidden; 
-        border: 1px solid rgba(255, 255, 255, 0.2); 
-    }
-    .nav-search .form-control { background: transparent; border: none; color: white; }
-    .nav-search .form-control::placeholder { color: rgba(255, 255, 255, 0.5); }
-    
-    /* Animations de contenu - FIX: Z-INDEX INFÉRIEUR */
-    .page-content { 
-        flex: 1; 
-        animation: fadeIn 0.8s ease-in; 
-        position: relative;
-        z-index: 1; /* Reste sous la navbar */
-    }
-    
-    @keyframes fadeIn { 
-        from { opacity: 0; transform: translateY(10px); } 
-        to { opacity: 1; transform: translateY(0); } 
-    }
-    
-    /* Alertes flottantes */
-    .alert-messages { position: fixed; top: 80px; right: 20px; z-index: 1050; min-width: 300px; }
-
-    /* Correction globale pour les cartes de chambres */
-    .card {
-        z-index: 10; /* Doit être inférieur à la navbar (2000) */
-    }
-</style>
-</head>
-<body>
-
-<nav class="navbar navbar-expand-lg navbar-dark sticky-top">
-    <div class="container">
-        <a class="navbar-brand fw-bold" href="/">
-            <i class="fas fa-plane-departure me-2"></i>SkyUp
+        gap: 15px;
+        margin-top: 15px;
+      }
+      .social-icon {
+        width: 40px;
+        height: 40px;
+        background: #F59E0B;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+        transition: background 0.3s ease, transform 0.3s ease;
+        cursor: pointer;
+      }
+      .social-icon:hover {
+        background: #d97706;
+        transform: translateY(-3px);
+      }
+      .payment-methods {
+        display: flex;
+        gap: 10px;
+        margin-top: 15px;
+        flex-wrap: wrap;
+      }
+      .payment-icon {
+        background: white;
+        padding: 5px 10px;
+        border-radius: 5px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: #1E3A8A;
+      }
+      .footer-divider {
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        margin: 30px 0;
+      }
+      .footer-bottom {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+        align-items: center;
+        text-align: center;
+      }
+      .footer-copyright {
+        color: #e0e7ff;
+        font-size: 0.9rem;
+      }
+      .footer-links {
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+        flex-wrap: wrap;
+      }
+      .footer-links a {
+        color: #e0e7ff;
+        text-decoration: none;
+        font-size: 0.9rem;
+        transition: color 0.3s ease;
+      }
+      .footer-links a:hover {
+        color: #F59E0B;
+      }
+      @media (max-width: 768px) {
+        .footer-bottom {
+          grid-template-columns: 1fr;
+        }
+        .footer-content {
+          grid-template-columns: 1fr;
+          gap: 30px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-dark sticky-top">
+      <div class="container">
+        <a
+          class="navbar-brand fw-bold"
+          href="/"
+          style="color: #1e3a8a !important"
+        >
+          <i class="fas fa-plane-departure me-2" style="color: #4da6ff"></i
+          ><span style="color: #4da6ff">Sky</span
+          ><span style="color: #f59e0b">Up</span>
         </a>
-        
-        <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-            <span class="navbar-toggler-icon"></span>
+
+        <button
+          class="navbar-toggler border-0"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNav"
+          style="color: #1e3a8a"
+        >
+          <span
+            class="navbar-toggler-icon"
+            style="
+              background-image: url(&quot;data:image/svg+xml;charset=utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 30 30%22><path stroke=%221E3A8A%22 stroke-linecap=%22round%22 stroke-miterlimit=%2210%22 stroke-width=%222%22 d=%22M4 7h22M4 15h22M4 23h22%22/></svg>&quot;);
+            "
+          ></span>
         </button>
 
         <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav {% if LANGUAGE_CODE == 'ar' %}ms-auto{% else %}me-auto{% endif %}">
-                <li class="nav-item"><a class="nav-link" href="/"><i class="fas fa-home me-1"></i> {% trans "Accueil" %}</a></li>
-                <li class="nav-item"><a class="nav-link" href="{% url 'hotel_list' %}"><i class="fas fa-hotel me-1"></i> {% trans "Hôtels" %}</a></li>
-                <li class="nav-item"><a class="nav-link" href="{% url 'flight_search' %}"><i class="fas fa-plane me-1"></i> {% trans "Vols" %}</a></li>
-                <li class="nav-item"><a class="nav-link" href="{% url 'cars:car_list' %}"><i class="fas fa-car me-1"></i> {% trans "Voitures" %}</a></li>
-            </ul>
+          <ul
+            class="navbar-nav {% if LANGUAGE_CODE == 'ar' %}ms-auto{% else %}me-auto{% endif %}"
+          >
+            <li class="nav-item">
+              <a class="nav-link" href="/"
+                ><i class="fas fa-home me-1"></i> {% trans "Accueil" %}</a
+              >
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'hotel_list' %}"
+                ><i class="fas fa-hotel me-1"></i> {% trans "Hôtels" %}</a
+              >
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'flight_search' %}"
+                ><i class="fas fa-plane me-1"></i> {% trans "Vols" %}</a
+              >
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'cars:car_list' %}"
+                ><i class="fas fa-car me-1"></i> {% trans "Voitures" %}</a
+              >
+            </li>
+          </ul>
 
-            <form class="nav-search mx-lg-3 my-2 my-lg-0" action="{% url 'hotel_list' %}" method="get">
-                <div class="input-group">
-                    <input type="text" name="q" class="form-control" placeholder="{% trans 'Rechercher...' %}" value="{{ query|default:'' }}">
-                    <button class="btn btn-primary" type="submit"><i class="fas fa-search"></i></button>
-                </div>
+          <form
+            class="nav-search mx-lg-3 my-2 my-lg-0"
+            action="{% url 'hotel_list' %}"
+            method="get"
+          >
+            <div class="input-group">
+              <input
+                type="text"
+                name="q"
+                class="form-control"
+                placeholder="{% trans 'Rechercher...' %}"
+                value="{{ query|default:'' }}"
+                style="color: #1e3a8a"
+              />
+              <button
+                class="btn"
+                type="submit"
+                style="background: #f59e0b; color: white"
+              >
+                <i class="fas fa-search"></i>
+              </button>
+            </div>
+          </form>
+
+          <div class="d-flex align-items-center gap-3">
+            <form
+              action="{% url 'set_language' %}"
+              method="post"
+              class="lang-form"
+            >
+              {% csrf_token %}
+              <input
+                name="next"
+                type="hidden"
+                value="{{ request.get_full_path }}"
+              />
+              <select
+                name="language"
+                onchange="this.form.submit()"
+                class="form-select form-select-sm rounded-pill"
+                style="
+                  background: #f8f9fa;
+                  border: 1px solid #1e3a8a;
+                  color: #1e3a8a;
+                "
+              >
+                {% get_current_language as CURRENT_LANG %}
+                {% get_available_languages as ALL_LANGS %}
+                {% for lang in ALL_LANGS %}
+                <option value="{{ lang.0 }}" {% if lang.0 == CURRENT_LANG %}selected{% endif %}>
+                  {{ lang.0|upper }}
+                </option>
+                {% endfor %}
+              </select>
             </form>
 
-            <div class="d-flex align-items-center gap-3">
-                <form action="{% url 'set_language' %}" method="post" class="lang-form">
+            {% if user.is_authenticated %}
+            <div class="dropdown">
+              <button
+                class="btn btn-outline-dark rounded-pill dropdown-toggle px-4"
+                type="button"
+                data-bs-toggle="dropdown"
+                style="color: #1e3a8a; border-color: #1e3a8a"
+              >
+                <i class="fas fa-user-circle me-1"></i> {{ user.username }}
+              </button>
+              <ul
+                class="dropdown-menu dropdown-menu-light shadow border-0 mt-2"
+                style="border-color: #1e3a8a"
+              >
+                <li>
+                  <a class="dropdown-item" href="{% url 'my_bookings' %}"
+                    ><i class="fas fa-suitcase me-2"></i> {% trans "Mes
+                    Réservations" %}</a
+                  >
+                </li>
+                <li><hr class="dropdown-divider opacity-25" /></li>
+                <li>
+                  <form method="post" action="{% url 'logout' %}">
                     {% csrf_token %}
-                    <input name="next" type="hidden" value="{{ request.get_full_path }}">
-                    <select name="language" onchange="this.form.submit()" class="form-select form-select-sm bg-dark text-white rounded-pill">
-                        {% get_current_language as CURRENT_LANG %}
-                        {% get_available_languages as ALL_LANGS %}
-                        {% for lang in ALL_LANGS %}
-                            <option value="{{ lang.0 }}" {% if lang.0 == CURRENT_LANG %}selected{% endif %}>{{ lang.0|upper }}</option>
-                        {% endfor %}
-                    </select>
-                </form>
-
-                {% if user.is_authenticated %}
-                    <div class="dropdown">
-                        <button class="btn btn-outline-light rounded-pill dropdown-toggle px-4" type="button" data-bs-toggle="dropdown">
-                            <i class="fas fa-user-circle me-1"></i> {{ user.username }}
-                        </button>
-                        <ul class="dropdown-menu dropdown-menu-dark shadow border-0 mt-2">
-                            <li><a class="dropdown-item" href="{% url 'my_bookings' %}"><i class="fas fa-suitcase me-2"></i> {% trans "Mes Réservations" %}</a></li>
-                            <li><hr class="dropdown-divider opacity-25"></li>
-                            <li>
-                                <form method="post" action="{% url 'logout' %}">
-                                    {% csrf_token %}
-                                    <button type="submit" class="dropdown-item text-danger">
-                                        <i class="fas fa-sign-out-alt me-2"></i> {% trans "Déconnexion" %}
-                                    </button>
-                                </form>
-                            </li>
-                        </ul>
-                    </div>
-                {% else %}
-                    <a href="{% url 'register' %}" class="btn btn-primary rounded-pill px-4 shadow">{% trans "S'inscrire" %}</a>
-                {% endif %}
+                    <button type="submit" class="dropdown-item text-danger">
+                      <i class="fas fa-sign-out-alt me-2"></i> {% trans
+                      "Déconnexion" %}
+                    </button>
+                  </form>
+                </li>
+              </ul>
             </div>
+            {% else %}
+            <a
+              href="{% url 'register' %}"
+              class="btn shadow"
+              href="{% url 'register' %}"
+              style="background: #f59e0b; color: white; border: none"
+              >{% trans "S'inscrire" %}</a
+            >
+            {% endif %}
+          </div>
         </div>
-    </div>
-</nav>
+      </div>
+    </nav>
 
-{% if messages %}
-<div class="alert-messages container">
-    {% for message in messages %}
-    <div class="alert alert-{{ message.tags }} alert-dismissible fade show shadow-lg border-0 rounded-4" role="alert">
-        <i class="fas {% if message.tags == 'success' %}fa-check-circle{% else %}fa-exclamation-circle{% endif %} me-2"></i>
+    {% if messages %}
+    <div class="alert-messages container">
+      {% for message in messages %}
+      <div
+        class="alert alert-{{ message.tags }} alert-dismissible fade show shadow-lg border-0 rounded-4"
+        role="alert"
+      >
+        <i
+          class="fas {% if message.tags == 'success' %}fa-check-circle{% else %}fa-exclamation-circle{% endif %} me-2"
+        ></i>
         {{ message }}
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="alert"
+          aria-label="Close"
+        ></button>
+      </div>
+      {% endfor %}
     </div>
-    {% endfor %}
-</div>
-{% endif %}
+    {% endif %}
 
-<main class="page-content container mt-4 mb-5">
-    {% block content %}
-    {% endblock %}
-</main>
+    <main class="page-content container mt-4 mb-5">
+      {% block content %} {% endblock %}
+    </main>
 
-<footer class="bg-dark text-white text-center py-4 mt-auto">
-    <div class="container">
-        <p class="mb-0">&copy; 2026 SkyUp Travel. {% trans "Tous droits réservés" %}.</p>
+    <!-- Footer Section -->
+<section class="footer-section">
+  <div class="footer-container">
+    <div class="footer-content">
+      <!-- Company Info -->
+      <div class="footer-column">
+        <h4>✈️ SkyUp Travel</h4>
+        <p>{% trans "Votre partenaire de confiance pour tous vos besoins de voyage. Nous vous offrons les meilleures expériences de voyage avec des services haut de gamme." %}</p>
+        <div class="social-links">
+          <div class="social-icon">📘</div>
+          <div class="social-icon">🐦</div>
+          <div class="social-icon">📷</div>
+          <div class="social-icon">▶️</div>
+        </div>
+      </div>
+
+      <!-- Quick Links -->
+      <div class="footer-column">
+        <h4>{% trans "Liens Rapides" %}</h4>
+        <ul>
+          <li><a href="{% url 'flight_search' %}">{% trans "Vols" %}</a></li>
+          <li><a href="{% url 'hotel_list' %}">{% trans "Hôtels" %}</a></li>
+          <li><a href="{% url 'cars:car_list' %}">{% trans "Location de Voitures" %}</a></li>
+          <li><a href="#">{% trans "Circuits Touristiques" %}</a></li>
+          <li><a href="#contact">{% trans "Nous Contacter" %}</a></li>
+        </ul>
+      </div>
+
+      <!-- Customer Service -->
+      <div class="footer-column">
+        <h4>{% trans "Service Client" %}</h4>
+        <ul>
+          <li><a href="#">{% trans "Centre d'Aide" %}</a></li>
+          <li><a href="#">{% trans "Conditions d'Utilisation" %}</a></li>
+          <li><a href="#">{% trans "Politique de Confidentialité" %}</a></li>
+          <li><a href="#">{% trans "Politique d'Annulation" %}</a></li>
+          <li><a href="#">{% trans "FAQ" %}</a></li>
+        </ul>
+      </div>
+
+      <!-- Contact Info -->
+      <div class="footer-column">
+        <h4>📞 {% trans "Nous Contacter" %}</h4>
+        <p>
+          <strong>{% trans "Téléphone:" %}</strong><br>
+          +00216 21155575
+        </p>
+        <p>
+          <strong>{% trans "Email:" %}</strong><br>
+          info@skyuptravel.com
+        </p>
+        <p>
+          <strong>{% trans "Adresse:" %}</strong><br>
+          SkyUp Travel, Alger, Algérie
+        </p>
+        <h4 style="margin-top: 20px; margin-bottom: 10px;">{% trans "Paiement" %}</h4>
+        <div class="payment-methods">
+          <div class="payment-icon">💳</div>
+          <div class="payment-icon">🏦</div>
+          <div class="payment-icon">📱</div>
+          <div class="payment-icon">🪙</div>
+        </div>
+      </div>
     </div>
-</footer>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-</body>
+  
+
+   
+</section>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
 </html>

@@ -2,126 +2,520 @@
 {% load i18n %}
 
 {% block content %}
-<div class="container mt-5">
-    <div class="text-center mb-5">
-        <h1 class="fw-bold display-5 text-dark">
+<style>
+    /* Header Section */
+    .cars-header {
+        background: linear-gradient(135deg, #1E3A8A 0%, #3B82F6 100%);
+        color: white;
+        padding: 60px 20px;
+        width: 100vw;
+        margin-left: calc(-50vw + 50%);
+        margin-top: -24px;
+        margin-bottom: 40px;
+        border-bottom: 3px solid #F59E0B;
+    }
+
+    .header-content {
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .header-title {
+        font-size: 3rem;
+        font-weight: 700;
+        margin-bottom: 10px;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+    }
+
+    .header-subtitle {
+        font-size: 1.2rem;
+        opacity: 0.95;
+        font-weight: 300;
+    }
+
+    /* Filter Section */
+    .filter-section {
+        background: white;
+        padding: 30px;
+        border-radius: 20px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+        margin-bottom: 50px;
+        border: 1px solid #E5E7EB;
+    }
+
+    .filter-title {
+        font-size: 1.3rem;
+        font-weight: 600;
+        color: #1E3A8A;
+        margin-bottom: 25px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .filter-title i {
+        color: #F59E0B;
+    }
+
+    .filter-buttons {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        justify-content: center;
+    }
+
+    .filter-btn {
+        padding: 12px 28px;
+        border: 2px solid #E5E7EB;
+        border-radius: 25px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        background: white;
+        color: #1E3A8A;
+        font-size: 0.95rem;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        white-space: nowrap;
+    }
+
+    .filter-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .filter-btn.active {
+        background: linear-gradient(135deg, #F59E0B 0%, #ff9a3d 100%);
+        color: white;
+        border-color: #F59E0B;
+        box-shadow: 0 8px 20px rgba(245, 158, 11, 0.3);
+    }
+
+    .filter-btn.active-success {
+        background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+        color: white;
+        border-color: #10B981;
+        box-shadow: 0 8px 20px rgba(16, 185, 129, 0.3);
+    }
+
+    .filter-btn.active-info {
+        background: linear-gradient(135deg, #3B82F6 0%, #2563EB 100%);
+        color: white;
+        border-color: #3B82F6;
+        box-shadow: 0 8px 20px rgba(59, 130, 246, 0.3);
+    }
+
+    .filter-btn.active-dark {
+        background: linear-gradient(135deg, #1F2937 0%, #111827 100%);
+        color: white;
+        border-color: #1F2937;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    /* Cars Grid */
+    .cars-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(330px, 1fr));
+        gap: 30px;
+        margin-bottom: 50px;
+    }
+
+    /* Car Card */
+    .car-card {
+        background: white;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+        transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+        border: 1px solid #E5E7EB;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+    }
+
+    .car-card:hover {
+        transform: translateY(-12px);
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
+    }
+
+    .car-image-container {
+        position: relative;
+        width: 100%;
+        height: 250px;
+        overflow: hidden;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+
+    .car-image-container img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.4s ease;
+    }
+
+    .car-card:hover .car-image-container img {
+        transform: scale(1.08);
+    }
+
+    .car-image-placeholder {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 4rem;
+    }
+
+    .car-price-badge {
+        position: absolute;
+        bottom: 15px;
+        {% if LANGUAGE_CODE == 'ar' %}
+        right: 15px;
+        {% else %}
+        left: 15px;
+        {% endif %}
+        background: white;
+        color: #1E3A8A;
+        padding: 12px 20px;
+        border-radius: 25px;
+        font-weight: 700;
+        font-size: 1.1rem;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-direction: column;
+    }
+
+    .price-amount {
+        font-size: 1.4rem;
+        color: #F59E0B;
+    }
+
+    .price-label {
+        font-size: 0.75rem;
+        color: #999;
+        font-weight: 500;
+    }
+
+    .car-content {
+        padding: 25px;
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .car-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: start;
+        gap: 12px;
+        margin-bottom: 15px;
+    }
+
+    .car-title {
+        font-size: 1.4rem;
+        font-weight: 700;
+        color: #1E3A8A;
+        line-height: 1.3;
+    }
+
+    .car-badge {
+        padding: 6px 14px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        white-space: nowrap;
+    }
+
+    .badge-economy {
+        background: #D1FAE5;
+        color: #065F46;
+    }
+
+    .badge-comfort {
+        background: #DBEAFE;
+        color: #0C4A6E;
+    }
+
+    .badge-luxury {
+        background: #F3F4F6;
+        color: #1F2937;
+    }
+
+    .car-specs {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        margin-bottom: 15px;
+        padding-bottom: 15px;
+        border-bottom: 1px solid #E5E7EB;
+    }
+
+    .spec-item {
+        background: #F9FAFB;
+        padding: 12px;
+        border-radius: 10px;
+        text-align: center;
+        border: 1px solid #E5E7EB;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .spec-icon {
+        font-size: 1.2rem;
+        color: #3B82F6;
+    }
+
+    .spec-label {
+        font-size: 0.85rem;
+        color: #1E3A8A;
+        font-weight: 600;
+    }
+
+    .spec-value {
+        font-size: 0.8rem;
+        color: #666;
+        font-weight: 500;
+    }
+
+    .car-footer {
+        display: grid;
+        gap: 10px;
+    }
+
+    .reserve-btn {
+        background: linear-gradient(135deg, #3B82F6 0%, #2563EB 100%);
+        color: white;
+        border: none;
+        padding: 12px 20px;
+        border-radius: 10px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        width: 100%;
+    }
+
+    .reserve-btn:hover {
+        background: linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(59, 130, 246, 0.3);
+        text-decoration: none;
+        color: white;
+    }
+
+    /* Empty State */
+    .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        grid-column: 1 / -1;
+    }
+
+    .empty-state-icon {
+        font-size: 4rem;
+        color: #D1D5DB;
+        margin-bottom: 20px;
+    }
+
+    .empty-state-text {
+        font-size: 1.3rem;
+        color: #999;
+        font-weight: 500;
+        margin-bottom: 20px;
+    }
+
+    .empty-state-btn {
+        background: linear-gradient(135deg, #3B82F6 0%, #2563EB 100%);
+        color: white;
+        border: none;
+        padding: 12px 30px;
+        border-radius: 10px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-block;
+    }
+
+    .empty-state-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(59, 130, 246, 0.3);
+        text-decoration: none;
+        color: white;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .header-title {
+            font-size: 2rem;
+        }
+
+        .header-subtitle {
+            font-size: 1rem;
+        }
+
+        .filter-buttons {
+            gap: 8px;
+        }
+
+        .filter-btn {
+            padding: 10px 16px;
+            font-size: 0.85rem;
+        }
+
+        .cars-grid {
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+
+        .filter-section {
+            padding: 20px;
+        }
+
+        .car-specs {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<!-- Header Section -->
+<div class="cars-header">
+    <div class="header-content">
+        <h1 class="header-title">
             🚗 {% trans "Trouvez votre voiture idéale" %}
         </h1>
-        <p class="lead text-muted">
+        <p class="header-subtitle">
             {% trans "Choisissez la catégorie qui correspond à votre budget et vos besoins" %}
         </p>
     </div>
+</div>
 
-    <div class="row justify-content-center mb-5">
-        <div class="col-md-10 text-center">
-            <form method="GET" action="." class="d-flex flex-wrap justify-content-center gap-2">
-                <a href="?" class="btn {% if not request.GET.category %}btn-primary{% else %}btn-outline-primary{% endif %} rounded-pill px-4 shadow-sm">
-                    {% trans "Tout" %}
-                </a>
+<div class="container">
+    <!-- Filter Section -->
+    <div class="filter-section">
+        <h3 class="filter-title">
+            <i class="fas fa-filter"></i>
+            {% trans "Filtrer par catégorie" %}
+        </h3>
+        
+        <div class="filter-buttons">
+            <a href="?" class="filter-btn {% if not request.GET.category %}active{% endif %}">
+                <i class="fas fa-list"></i>
+                {% trans "Tout" %}
+            </a>
 
-                <button type="submit" name="category" value="petit" class="btn {% if request.GET.category == 'petit' %}btn-success{% else %}btn-outline-success{% endif %} rounded-pill px-4 shadow-sm">
-                    <i class="fas fa-leaf me-1"></i> 
-                    {% trans "Économique" %} (< 150 DT)
+            <form method="GET" action="." style="display: inline;">
+                <button type="submit" name="category" value="petit" class="filter-btn {% if request.GET.category == 'petit' %}active-success{% endif %}">
+                    <i class="fas fa-leaf"></i>
+                    {% trans "Économique" %}
                 </button>
+            </form>
 
-                <button type="submit" name="category" value="moyen" class="btn {% if request.GET.category == 'moyen' %}btn-info text-white{% else %}btn-outline-info{% endif %} rounded-pill px-4 shadow-sm">
-                    <i class="fas fa-couch me-1"></i> 
-                    {% trans "Confort" %} (150 - 400 DT)
+            <form method="GET" action="." style="display: inline;">
+                <button type="submit" name="category" value="moyen" class="filter-btn {% if request.GET.category == 'moyen' %}active-info{% endif %}">
+                    <i class="fas fa-couch"></i>
+                    {% trans "Confort" %}
                 </button>
+            </form>
 
-                <button type="submit" name="category" value="luxe" class="btn {% if request.GET.category == 'luxe' %}btn-dark{% else %}btn-outline-dark{% endif %} rounded-pill px-4 shadow-sm">
-                    <i class="fas fa-crown me-1 text-warning"></i> 
-                    {% trans "Luxe & SUV" %} (> 400 DT)
+            <form method="GET" action="." style="display: inline;">
+                <button type="submit" name="category" value="luxe" class="filter-btn {% if request.GET.category == 'luxe' %}active-dark{% endif %}">
+                    <i class="fas fa-crown"></i>
+                    {% trans "Luxe & SUV" %}
                 </button>
             </form>
         </div>
     </div>
 
-    <div class="row">
+    <!-- Cars Grid -->
+    <div class="cars-grid">
         {% for car in cars %}
-        <div class="col-md-6 col-lg-4 mb-4">
-            <div class="card h-100 shadow-sm border-0 rounded-4 transition-hover overflow-hidden">
-                <div class="position-relative">
-                    {% if car.image %}
-                        <img src="{{ car.image.url }}" class="card-img-top" style="height: 220px; object-fit: cover;" alt="{{ car.brand }}">
+        <div class="car-card">
+            <div class="car-image-container">
+                {% if car.image %}
+                    <img src="{{ car.image.url }}" alt="{{ car.brand }} {{ car.model_name }}">
+                {% else %}
+                    <div class="car-image-placeholder">🚗</div>
+                {% endif %}
+                <div class="car-price-badge">
+                    <span class="price-amount">{{ car.price_per_day|floatformat:0 }} TND</span>
+                    <span class="price-label">{% trans "par jour" %}</span>
+                </div>
+            </div>
+
+            <div class="car-content">
+                <div class="car-header">
+                    <h3 class="car-title">{{ car.brand }} {{ car.model_name }}</h3>
+                    {% if car.price_per_day < 150 %}
+                        <span class="car-badge badge-economy">{% trans "Petit" %}</span>
+                    {% elif car.price_per_day <= 400 %}
+                        <span class="car-badge badge-comfort">{% trans "Moyen" %}</span>
                     {% else %}
-                        <div class="bg-light d-flex align-items-center justify-content-center" style="height: 220px;">
-                            <i class="fas fa-car fa-4x text-secondary opacity-25"></i>
-                        </div>
+                        <span class="car-badge badge-luxury">{% trans "Luxe" %}</span>
                     {% endif %}
-                    
-                    <div class="position-absolute bottom-0 {% if LANGUAGE_CODE == 'ar' %}end-0{% else %}start-0{% endif %} m-3 bg-white px-3 py-1 rounded-pill shadow-sm border">
-                        <span class="fw-bold text-success">{{ car.price_per_day|floatformat:0 }}</span>
-                        <small class="text-muted">TND / {% trans "jour" %}</small>
+                </div>
+
+                <div class="car-specs">
+                    <div class="spec-item">
+                        <div class="spec-icon">
+                            <i class="fas fa-cog"></i>
+                        </div>
+                        <div class="spec-label">{% trans "Transmission" %}</div>
+                        <div class="spec-value">
+                            {% if car.transmission == 'MANUAL' %}
+                                {% trans "Manuelle" %}
+                            {% else %}
+                                {% trans "Automatique" %}
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="spec-item">
+                        <div class="spec-icon">
+                            <i class="fas fa-gas-pump"></i>
+                        </div>
+                        <div class="spec-label">{% trans "Carburant" %}</div>
+                        <div class="spec-value">
+                            {% if car.fuel_type == 'GASOLINE' %}
+                                {% trans "Essence" %}
+                            {% else %}
+                                {{ car.fuel_type }}
+                            {% endif %}
+                        </div>
                     </div>
                 </div>
 
-                <div class="card-body p-4">
-                    <div class="d-flex justify-content-between align-items-start mb-2">
-                        <h5 class="card-title fw-bold text-dark m-0">{{ car.brand }} {{ car.model_name }}</h5>
-                        
-                        {% if car.price_per_day < 150 %}
-                            <span class="badge rounded-pill bg-success opacity-75">{% trans "Petit" %}</span>
-                        {% elif car.price_per_day <= 400 %}
-                            <span class="badge rounded-pill bg-info opacity-75">{% trans "Moyen" %}</span>
-                        {% else %}
-                            <span class="badge rounded-pill bg-dark">{% trans "Luxe" %}</span>
-                        {% endif %}
-                    </div>
-                    
-                    <div class="row g-2 mb-4 mt-3">
-                        <div class="col-6">
-                            <div class="p-2 border rounded bg-light text-center small">
-                                <i class="fas fa-cog text-primary me-1"></i> 
-                                {% if car.transmission == 'MANUAL' %}
-                                    {% trans "Manuelle" %}
-                                {% else %}
-                                    {% trans "Automatique" %}
-                                {% endif %}
-                            </div>
-                        </div>
-                        <div class="col-6">
-                            <div class="p-2 border rounded bg-light text-center small">
-                                <i class="fas fa-gas-pump text-primary me-1"></i>
-                                {% if car.fuel_type == 'GASOLINE' %}
-                                    {% trans "Essence" %}
-                                {% else %}
-                                    {{ car.fuel_type }}
-                                {% endif %}
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="d-grid mt-3">
-                        <a href="{% url 'cars:car_detail' car.pk %}" class="btn btn-outline-primary rounded-pill py-2 fw-bold shadow-sm transition-btn">
-                            <i class="fas fa-calendar-check me-1"></i>
-                            {% trans "Réserver maintenant" %}
-                        </a>
-                    </div>
+                <div class="car-footer">
+                    <a href="{% url 'cars:car_detail' car.pk %}" class="reserve-btn">
+                        <i class="fas fa-calendar-check"></i>
+                        {% trans "Réserver maintenant" %}
+                    </a>
                 </div>
             </div>
         </div>
         {% empty %}
-        <div class="col-12 text-center py-5">
-            <div class="alert alert-light border shadow-sm p-5">
-                <i class="fas fa-search fa-3x text-muted mb-3"></i>
-                <p class="h4 text-muted">{% trans "Aucune voiture trouvée." %}</p>
-                <a href="?" class="btn btn-primary mt-3">{% trans "Voir tout" %}</a>
+        <div class="empty-state">
+            <div class="empty-state-icon">
+                <i class="fas fa-search"></i>
             </div>
+            <p class="empty-state-text">
+                {% trans "Aucune voiture trouvée." %}
+            </p>
+            <a href="?" class="empty-state-btn">
+                {% trans "Voir toutes les voitures" %}
+            </a>
         </div>
         {% endfor %}
     </div>
 </div>
 
-<style>
-    .transition-hover:hover {
-        transform: translateY(-8px);
-        transition: all 0.3s ease-in-out;
-        box-shadow: 0 15px 30px rgba(0,0,0,0.12) !important;
-    }
-    .transition-btn:hover {
-        background-color: #0d6efd !important;
-        color: white !important;
-    }
-</style>
 {% endblock %}

@@ -1,28 +1,813 @@
-{% extends 'base.html' %}
-{% load static %}
-
-{% block content %}
+{% extends 'base.html' %} {% load static %} {% load i18n %} {% block content %}
 <style>
-    .hero {
-        height: 100vh; display: flex; flex-direction: column;
-        justify-content: center; align-items: center; text-align: center; color: white;
-        background: linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0.55)),
-        url("{% static 'images/plane.jpg' %}") center/cover no-repeat fixed;
-        margin-top: -80px; /* ليتداخل مع الـ Navbar الشفاف */
+  .carousel-container {
+    width: 100vw;
+    height: 500px;
+    overflow: hidden;
+    margin-left: calc(-50vw + 50%);
+  }
+  .carousel-inner {
+    height: 100%;
+  }
+  .carousel-inner img {
+    height: 100%;
+    object-fit: cover;
+  }
+
+  /* Contact Section Styles */
+  .contact-section {
+    background: #FFFFFF !important;
+    color: #1E3A8A !important;
+    padding: 80px 20px;
+    width: 100vw;
+    margin-left: calc(-50vw + 50%);
+    border-bottom: 3px solid #F59E0B !important;
+  }
+  .contact-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+  .contact-title {
+    text-align: center;
+    font-size: 2.5rem;
+    font-weight: bold;
+    margin-bottom: 50px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+    color: #1E3A8A !important;
+  }
+  .contact-content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    align-items: start;
+  }
+  .contact-info-card {
+    background: rgba(30, 58, 138, 0.05);
+    padding: 30px;
+    border-radius: 15px;
+    border: 2px solid #F59E0B;
+  }
+  .contact-info-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 25px;
+    gap: 15px;
+  }
+  .contact-icon {
+    width: 50px;
+    height: 50px;
+    background: #F59E0B;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    color: white;
+  }
+  .contact-info-text h4 {
+    margin: 0 0 5px 0;
+    font-size: 1.1rem;
+    color: #1E3A8A !important;
+  }
+  .contact-info-text p {
+    margin: 0;
+    font-size: 0.95rem;
+    color: #1E3A8A;
+  }
+  .contact-form {
+    background: rgba(30, 58, 138, 0.05);
+    padding: 30px;
+    border-radius: 15px;
+    border: 2px solid #F59E0B;
+  }
+  .form-group {
+    margin-bottom: 20px;
+  }
+  .form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+    color: #1E3A8A !important;
+  }
+  .form-group input,
+  .form-group textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #F59E0B;
+    border-radius: 8px;
+    background: white;
+    color: #1E3A8A;
+    font-family: inherit;
+    font-size: 0.95rem;
+  }
+  .form-group input::placeholder,
+  .form-group textarea::placeholder {
+    color: #1E3A8A;
+    opacity: 0.6;
+  }
+  .form-group textarea {
+    resize: vertical;
+    min-height: 100px;
+  }
+  .submit-btn {
+    width: 100%;
+    padding: 14px;
+    background: #F59E0B;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition:
+      transform 0.3s ease,
+      box-shadow 0.3s ease;
+  }
+  .submit-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(245, 158, 11, 0.4);
+    background: #d97706;
+  }
+  @media (max-width: 768px) {
+    .contact-content {
+      grid-template-columns: 1fr;
     }
-    .search-box { background: white; padding: 30px; border-radius: 25px; width: 90%; max-width: 900px; color: black; }
+    .contact-title {
+      font-size: 2rem;
+    }
+  }
+
+  /* Hotels Slider Styles */
+  .hotels-section {
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    padding: 60px 20px;
+    width: 100vw;
+    margin-left: calc(-50vw + 50%);
+  }
+  .hotels-container {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  .hotels-title {
+    text-align: center;
+    font-size: 2.5rem;
+    font-weight: bold;
+    margin-bottom: 50px;
+    color: #1E3A8A;
+  }
+  .hotels-slider {
+    position: relative;
+  }
+  .hotel-card {
+    background: white;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+  .hotel-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+  }
+  .hotel-image {
+    width: 100%;
+    height: 250px;
+    object-fit: cover;
+    background: #e0e0e0;
+  }
+  .hotel-content {
+    padding: 20px;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+  }
+  .hotel-name {
+    font-size: 1.3rem;
+    font-weight: bold;
+    color: #1E3A8A;
+    margin-bottom: 8px;
+  }
+  .hotel-location {
+    font-size: 0.9rem;
+    color: #666;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .hotel-stars {
+    color: #F59E0B;
+    margin-bottom: 12px;
+    font-size: 0.95rem;
+  }
+  .hotel-amenities {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 15px;
+    font-size: 0.85rem;
+    flex-wrap: wrap;
+  }
+  .amenity {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    color: #555;
+  }
+  .hotel-price {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #F59E0B;
+    margin-bottom: 12px;
+  }
+  .view-hotel-btn {
+    background: #F59E0B;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.3s ease;
+    text-decoration: none;
+    text-align: center;
+    display: inline-block;
+  }
+  .view-hotel-btn:hover {
+    background: #d97706;
+    text-decoration: none;
+    color: white;
+  }
+  .hotels-carousel {
+    display: flex;
+    gap: 20px;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    padding: 10px 0;
+  }
+  .hotels-carousel::-webkit-scrollbar {
+    height: 8px;
+  }
+  .hotels-carousel::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+  }
+  .hotels-carousel::-webkit-scrollbar-thumb {
+    background: #F59E0B;
+    border-radius: 10px;
+  }
+  .hotel-card-wrapper {
+    flex: 0 0 calc(33.333% - 14px);
+    min-width: 300px;
+  }
+  @media (max-width: 1024px) {
+    .hotel-card-wrapper {
+      flex: 0 0 calc(50% - 10px);
+    }
+  }
+  @media (max-width: 768px) {
+    .hotel-card-wrapper {
+      flex: 0 0 calc(100% - 0px);
+    }
+    .hotels-title {
+      font-size: 2rem;
+    }
+  }
+
+  /* Featured Services Styles */
+  .services-section {
+    background: linear-gradient(135deg, #1E3A8A 0%, #3B82F6 100%);
+    padding: 60px 20px;
+    width: 100vw;
+    margin-left: calc(-50vw + 50%);
+  }
+  .services-container {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  .services-title {
+    text-align: center;
+    font-size: 2.5rem;
+    font-weight: bold;
+    margin-bottom: 50px;
+    color: white;
+  }
+  .services-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 30px;
+  }
+  .service-card {
+    background: white;
+    padding: 40px 30px;
+    border-radius: 15px;
+    text-align: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  }
+  .service-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+  }
+  .service-icon {
+    font-size: 3.5rem;
+    margin-bottom: 20px;
+    display: inline-block;
+  }
+  .service-card h3 {
+    font-size: 1.4rem;
+    color: #1E3A8A;
+    margin-bottom: 15px;
+    font-weight: bold;
+  }
+  .service-card p {
+    color: #666;
+    font-size: 0.95rem;
+    margin-bottom: 20px;
+    line-height: 1.6;
+  }
+  .service-link {
+    display: inline-block;
+    background: #F59E0B;
+    color: white;
+    padding: 10px 25px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: background 0.3s ease;
+  }
+  .service-link:hover {
+    background: #d97706;
+    text-decoration: none;
+    color: white;
+  }
+  @media (max-width: 768px) {
+    .services-title {
+      font-size: 2rem;
+    }
+    .services-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* Why Choose Us Styles */
+  .why-us-section {
+    background: #FFFFFF;
+    padding: 80px 20px;
+    width: 100vw;
+    margin-left: calc(-50vw + 50%);
+    border-top: 3px solid #F59E0B;
+    border-bottom: 3px solid #F59E0B;
+  }
+  .why-us-container {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  .why-us-title {
+    text-align: center;
+    font-size: 2.5rem;
+    font-weight: bold;
+    margin-bottom: 60px;
+    color: #1E3A8A;
+  }
+  .why-us-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 40px;
+  }
+  .why-us-card {
+    text-align: center;
+    padding: 30px;
+  }
+  .why-us-icon {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, #F59E0B 0%, #ff8c00 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.5rem;
+    margin: 0 auto 20px;
+    box-shadow: 0 8px 20px rgba(245, 158, 11, 0.3);
+  }
+  .why-us-card h3 {
+    font-size: 1.3rem;
+    color: #1E3A8A;
+    margin-bottom: 15px;
+    font-weight: bold;
+  }
+  .why-us-card p {
+    color: #666;
+    font-size: 0.95rem;
+    line-height: 1.7;
+  }
+  @media (max-width: 768px) {
+    .why-us-title {
+      font-size: 2rem;
+    }
+    .why-us-grid {
+      grid-template-columns: 1fr;
+      gap: 30px;
+    }
+  }
+
+  /* Footer Styles */
+  .footer-section {
+    background: linear-gradient(135deg, #1E3A8A 0%, #0F172A 100%);
+    color: white;
+    padding: 60px 20px 30px;
+    width: 100vw;
+    margin-left: calc(-50vw + 50%);
+  }
+  .footer-container {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  .footer-content {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 40px;
+    margin-bottom: 40px;
+  }
+  .footer-column h4 {
+    font-size: 1.2rem;
+    margin-bottom: 20px;
+    font-weight: bold;
+    color: #F59E0B;
+  }
+  .footer-column ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  .footer-column ul li {
+    margin-bottom: 12px;
+  }
+  .footer-column ul li a {
+    color: #e0e7ff;
+    text-decoration: none;
+    transition: color 0.3s ease;
+  }
+  .footer-column ul li a:hover {
+    color: #F59E0B;
+  }
+  .footer-column p {
+    color: #e0e7ff;
+    font-size: 0.95rem;
+    line-height: 1.8;
+  }
+  .social-links {
+    display: flex;
+    gap: 15px;
+    margin-top: 15px;
+  }
+  .social-icon {
+    width: 40px;
+    height: 40px;
+    background: #F59E0B;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    transition: background 0.3s ease, transform 0.3s ease;
+    cursor: pointer;
+  }
+  .social-icon:hover {
+    background: #d97706;
+    transform: translateY(-3px);
+  }
+  .payment-methods {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+    flex-wrap: wrap;
+  }
+  .payment-icon {
+    background: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #1E3A8A;
+  }
+  .footer-divider {
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    margin: 30px 0;
+  }
+  .footer-bottom {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    align-items: center;
+    text-align: center;
+  }
+  .footer-copyright {
+    color: #e0e7ff;
+    font-size: 0.9rem;
+  }
+  .footer-links {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+  .footer-links a {
+    color: #e0e7ff;
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: color 0.3s ease;
+  }
+  .footer-links a:hover {
+    color: #F59E0B;
+  }
+  @media (max-width: 768px) {
+    .footer-bottom {
+      grid-template-columns: 1fr;
+    }
+    .footer-content {
+      grid-template-columns: 1fr;
+      gap: 30px;
+    }
+  }
 </style>
 
-<div class="hero">
-    <h1 class="display-4 fw-bold">Welcome to SkyUp Travel ✨</h1>
-    <p class="lead">Touch The Sky</p>
-    <div class="search-box">
-        <div class="row g-2">
-            <div class="col-md-4"><input class="form-control" placeholder="Departure City"></div>
-            <div class="col-md-4"><input class="form-control" placeholder="Arrival City"></div>
-            <div class="col-md-4"><input type="date" class="form-control"></div>
-        </div>
-        <button class="btn btn-primary w-100 mt-3">Search Flights ✈️</button>
+<div
+  id="heroCarousel"
+  class="carousel slide carousel-container"
+  data-bs-ride="carousel"
+  data-bs-interval="3000"
+>
+  <div class="carousel-inner">
+    <div class="carousel-item active">
+      <img
+        src="/media/siders/SkyUp_Travel.png"
+        class="d-block w-100"
+        alt="SkyUp Travel Adventure"
+      />
     </div>
+    <div class="carousel-item">
+      <img
+        src="/media/siders/Omra_VIP.png"
+        class="d-block w-100"
+        alt="Omra VIP Package"
+      />
+    </div>
+    <div class="carousel-item">
+      <img
+        src="/media/siders/ey.png"
+        class="d-block w-100"
+        alt="Visa Services"
+      />
+    </div>
+  </div>
+  <button
+    class="carousel-control-prev"
+    type="button"
+    data-bs-target="#heroCarousel"
+    data-bs-slide="prev"
+  >
+    <span class="carousel-control-prev-icon"></span>
+  </button>
+  <button
+    class="carousel-control-next"
+    type="button"
+    data-bs-target="#heroCarousel"
+    data-bs-slide="next"
+  >
+    <span class="carousel-control-next-icon"></span>
+  </button>
 </div>
+
+<!-- Featured Services Section -->
+<section class="services-section">
+  <div class="services-container">
+    <h2 class="services-title">🌍 {% trans "Nos Services" %}</h2>
+    <div class="services-grid">
+      <div class="service-card">
+        <div class="service-icon">✈️</div>
+        <h3>{% trans "Vols" %}</h3>
+        <p>{% trans "Trouvez et réservez les meilleurs vols vers vos destinations préférées à travers le monde." %}</p>
+        <a href="{% url 'flight_search' %}" class="service-link">{% trans "Explorer" %} →</a>
+      </div>
+      
+      <div class="service-card">
+        <div class="service-icon">🏨</div>
+        <h3>{% trans "Hôtels" %}</h3>
+        <p>{% trans "Découvrez une large sélection d'hôtels luxueux et économiques dans le monde entier." %}</p>
+        <a href="{% url 'hotel_list' %}" class="service-link">{% trans "Explorer" %} →</a>
+      </div>
+      
+      <div class="service-card">
+        <div class="service-icon">🚗</div>
+        <h3>{% trans "Location de Voitures" %}</h3>
+        <p>{% trans "Louez une voiture de qualité à des prix compétitifs pour explorer votre destination." %}</p>
+        <a href="{% url 'cars:car_list' %}" class="service-link">{% trans "Explorer" %} →</a>
+      </div>
+      
+      <div class="service-card">
+        <div class="service-icon">🎯</div>
+        <h3>{% trans "Circuits Touristiques" %}</h3>
+        <p>{% trans "Profitez de circuits organisés avec des guides experts pour découvrir les merveilles du monde." %}</p>
+        <a href="#tours" class="service-link">{% trans "Explorer" %} →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Hotels Slider Section -->
+<section class="hotels-section">
+  <div class="hotels-container">
+    <h2 class="hotels-title">🏨 {% trans "Nos Partenaires" %}</h2>
+    <div class="hotels-carousel">
+      {% for hotel in hotels %}
+      <div class="hotel-card-wrapper">
+        <div class="hotel-card">
+          {% if hotel.image %}
+            <img src="{{ hotel.image.url }}" alt="{{ hotel.name }}" class="hotel-image">
+          {% else %}
+            <div class="hotel-image" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; color: white; font-size: 3rem;">
+              🏨
+            </div>
+          {% endif %}
+          <div class="hotel-content">
+            <h3 class="hotel-name">{{ hotel.name }}</h3>
+            <div class="hotel-location">📍 {{ hotel.city }}, {{ hotel.country }}</div>
+            <div class="hotel-stars">
+              {% for i in "x"|rjust:"5" %}
+                {% if forloop.counter <= hotel.stars %}
+                  ⭐
+                {% else %}
+                  ☆
+                {% endif %}
+              {% endfor %}
+              ({{ hotel.stars }}/5)
+            </div>
+            <div class="hotel-amenities">
+              {% if hotel.has_wifi %}
+                <div class="amenity">📶 WiFi</div>
+              {% endif %}
+              {% if hotel.has_pool %}
+                <div class="amenity">🏊 {% trans "Piscine" %}</div>
+              {% endif %}
+              {% if hotel.has_parking %}
+                <div class="amenity">🅿️ {% trans "Stationnement" %}</div>
+              {% endif %}
+            </div>
+            <div class="hotel-price">{{ hotel.price_per_night }} TND/{% trans "nuit" %}</div>
+            <a href="{% url 'hotel_detail' hotel.id %}" class="view-hotel-btn">{% trans "Voir les Détails" %} →</a>
+          </div>
+        </div>
+      </div>
+      {% empty %}
+      <p style="text-align: center; color: #1E3A8A; width: 100%; padding: 40px;">{% trans "Aucun hôtel disponible pour le moment." %}</p>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- Why Choose Us Section -->
+<section class="why-us-section">
+  <div class="why-us-container">
+    <h2 class="why-us-title">⭐ {% trans "Pourquoi Nous Choisir?" %}</h2>
+    <div class="why-us-grid">
+      <div class="why-us-card">
+        <div class="why-us-icon">💰</div>
+        <h3>{% trans "Meilleurs Prix" %}</h3>
+        <p>{% trans "Nous garantissons les meilleurs prix du marché avec des réductions exclusives et des offres spéciales régulières." %}</p>
+      </div>
+      
+      <div class="why-us-card">
+        <div class="why-us-icon">🛡️</div>
+        <h3>{% trans "Paiement Sécurisé" %}</h3>
+        <p>{% trans "Vos transactions sont protégées par les normes de sécurité les plus élevées du secteur." %}</p>
+      </div>
+      
+      <div class="why-us-card">
+        <div class="why-us-icon">⏰</div>
+        <h3>{% trans "Support 24/7" %}</h3>
+        <p>{% trans "Notre équipe de service client est disponible 24 heures sur 24, 7 jours sur 7 pour vous aider." %}</p>
+      </div>
+      
+      <div class="why-us-card">
+        <div class="why-us-icon">🎯</div>
+        <h3>{% trans "Destination Variée" %}</h3>
+        <p>{% trans "Accédez à des milliers de destinations dans le monde entier avec des options personnalisées." %}</p>
+      </div>
+      
+      <div class="why-us-card">
+        <div class="why-us-icon">👥</div>
+        <h3>{% trans "Expérience de Confiance" %}</h3>
+        <p>{% trans "Des milliers de clients satisfaits nous font confiance pour leurs voyages depuis des années." %}</p>
+      </div>
+      
+      <div class="why-us-card">
+        <div class="why-us-icon">📱</div>
+        <h3>{% trans "Plateforme Facile" %}</h3>
+        <p>{% trans "Notre interface utilisateur intuitive rend la réservation simple et rapide en quelques clics." %}</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Contact Us Section -->
+<section class="contact-section">
+  <div class="contact-container">
+    <h2 class="contact-title">✉️ {% trans "Nous Contacter" %}</h2>
+
+    <div class="contact-content">
+      <!-- Contact Information -->
+      <div class="contact-info-card">
+        <div class="contact-info-item">
+          <div class="contact-icon">📍</div>
+          <div class="contact-info-text">
+            <h4>{% trans "Adresse" %}</h4>
+            <p>{% trans "SkyUp Travel HQ, Alger, Algérie" %}</p>
+          </div>
+        </div>
+
+        <div class="contact-info-item">
+          <div class="contact-icon">📞</div>
+          <div class="contact-info-text">
+            <h4>{% trans "Téléphone" %}</h4>
+            <p>+00216 21155575</p>
+          </div>
+        </div>
+
+        <div class="contact-info-item">
+          <div class="contact-icon">✉️</div>
+          <div class="contact-info-text">
+            <h4>{% trans "Email" %}</h4>
+            <p>info@skyuptravel.com</p>
+          </div>
+        </div>
+
+        <div class="contact-info-item">
+          <div class="contact-icon">🕐</div>
+          <div class="contact-info-text">
+            <h4>{% trans "Heures de Travail" %}</h4>
+            <p>{% trans "Lun - Ven: 9:00 AM - 6:00 PM" %}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Contact Form -->
+      <div class="contact-form">
+        <form method="POST">
+          {% csrf_token %}
+          <div class="form-group">
+            <label for="name">{% trans "Nom" %}</label>
+            <input
+              type="text"
+              id="name"
+              name="name"
+              placeholder="{% trans 'Votre Nom Complet' %}"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="email">{% trans "Email" %}</label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              placeholder="votre@email.com"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="phone">{% trans "Téléphone" %}</label>
+            <input
+              type="tel"
+              id="phone"
+              name="phone"
+              placeholder="{% trans 'Votre Numéro de Téléphone' %}"
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="message">{% trans "Message" %}</label>
+            <textarea
+              id="message"
+              name="message"
+              placeholder="{% trans 'Votre message ici...' %}"
+              required
+            ></textarea>
+          </div>
+
+          <button type="submit" class="submit-btn">{% trans "Envoyer le Message" %} 🚀</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+
 {% endblock %}

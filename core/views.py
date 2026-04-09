@@ -4,6 +4,5 @@ from hotels.models import Hotel
 
 # Afficher la page d'accueil
 def home(request):
-    # Récupérer les 3 derniers hôtels
-    featured_hotels = Hotel.objects.all().order_by('-created_at')[:3]
+    featured_hotels = Hotel.objects.all().order_by('-created_at')
     return render(request, 'core/home.html', {'hotels': featured_hotels})
