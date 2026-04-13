@@ -46,7 +46,7 @@ def car_detail(request, pk):
             success_msg = _("Votre réservation pour la %(brand)s a été enregistrée avec succès !") % {'brand': car.brand}
             messages.success(request, success_msg)
             
-            return redirect('car_detail', pk=pk)
+            return redirect('cars:car_detail', pk=pk)
     else:
         form = BookingForm()
         
