@@ -273,7 +273,7 @@
               >
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="{% url 'hotel_list' %}"
+              <a class="nav-link" href="{% url 'hotels:hotel_list' %}"
                 ><i class="fas fa-hotel me-1"></i> {% trans "Hôtels" %}</a
               >
             </li>
@@ -291,7 +291,7 @@
 
           <form
             class="nav-search mx-lg-3 my-2 my-lg-0"
-            action="{% url 'hotel_list' %}"
+            action="{% url 'hotels:hotel_list' %}"
             method="get"
           >
             <div class="input-group">
@@ -438,7 +438,7 @@
         <h4>{% trans "Liens Rapides" %}</h4>
         <ul>
           <li><a href="{% url 'flight_search' %}">{% trans "Vols" %}</a></li>
-          <li><a href="{% url 'hotel_list' %}">{% trans "Hôtels" %}</a></li>
+          <li><a href="{% url 'hotels:hotel_list' %}">{% trans "Hôtels" %}</a></li>
           <li><a href="{% url 'cars:car_list' %}">{% trans "Location de Voitures" %}</a></li>
           <li><a href="#">{% trans "Circuits Touristiques" %}</a></li>
           <li><a href="#contact">{% trans "Nous Contacter" %}</a></li>

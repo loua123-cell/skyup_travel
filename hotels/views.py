@@ -1,6 +1,11 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.db.models import Q
-from .models import Hotel, Room
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from django.utils.translation import gettext as _
+from datetime import datetime, timedelta
+from .models import Hotel, Room, HotelBooking
+from .forms import HotelBookingForm
 
 # Afficher la liste des hôtels avec options de recherche avancée
 def hotel_list(request):
@@ -65,4 +70,60 @@ def hotel_detail(request, pk):
     return render(request, 'hotels/hotel_detail.html', {
         'hotel': hotel,
         'rooms': rooms
+    })
+
+def book_room(request, room_id):
+    """
+    Affiche le formulaire de réservation pour une chambre spécifique.
+    """
+    room = get_object_or_404(Room, pk=room_id)
+    
+    if request.method == 'POST':
+        form = HotelBookingForm(request.POST)
+        if form.is_valid():
+            booking = form.save(commit=False)
+            booking.room = room
+            
+            # Calculer le prix total
+            check_in = booking.check_in_date
+            check_out = booking.check_out_date
+            nights = (check_out - check_in).days
+            
+            if nights <= 0:
+                messages.error(request, _("La date de départ doit être après la date d'arrivée."))
+                return render(request, 'hotels/book_room.html', {'room': room, 'form': form})
+            
+            # Calcul du prix: prix de chambre + prix enfants
+            total_price = (room.price_per_night * nights) + (room.price_per_child * booking.number_of_children * nights)
+            booking.total_price = total_price
+            booking.save()
+            
+            success_msg = _("Votre réservation pour %(room_type)s a été enregistrée avec succès !") % {
+                'room_type': room.get_room_type_display()
+            }
+            messages.success(request, success_msg)
+            
+            return redirect('hotels:booking_success', booking_id=booking.id)
+    else:
+        form = HotelBookingForm()
+    
+    return render(request, 'hotels/book_room.html', {
+        'room': room,
+        'hotel': room.hotel,
+        'form': form
+    })
+
+def booking_success(request, booking_id):
+    """
+    Affiche la page de confirmation de réservation.
+    """
+    booking = get_object_or_404(HotelBooking, pk=booking_id)
+    
+    # Calculer le nombre de nuits
+    nights = (booking.check_out_date - booking.check_in_date).days
+    
+    return render(request, 'booking_success.html', {
+        'booking': booking,
+        'nights': nights,
+        'hotel': booking.room.hotel
     })

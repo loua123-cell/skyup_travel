@@ -105,3 +105,37 @@ class SeasonalPrice(models.Model):
     class Meta:
         verbose_name = "Prix Saisonnier"
         verbose_name_plural = "Prix Saisonniers"
+
+class HotelBooking(models.Model):
+    """Gère les réservations d'hôtel."""
+    
+    BOOKING_STATUS = [
+        ('PENDING', 'En attente'),
+        ('CONFIRMED', 'Confirmée'),
+        ('CANCELLED', 'Annulée'),
+    ]
+    
+    room = models.ForeignKey(Room, on_delete=models.CASCADE, related_name='bookings')
+    guest_name = models.CharField(max_length=200, verbose_name="Nom du client")
+    guest_email = models.EmailField(verbose_name="Email")
+    guest_phone = models.CharField(max_length=20, verbose_name="Téléphone")
+    
+    check_in_date = models.DateField(verbose_name="Date d'arrivée")
+    check_out_date = models.DateField(verbose_name="Date de départ")
+    
+    number_of_adults = models.IntegerField(default=1, verbose_name="Nombre d'adultes")
+    number_of_children = models.IntegerField(default=0, verbose_name="Nombre d'enfants")
+    number_of_babies = models.IntegerField(default=0, verbose_name="Nombre de bébés")
+    
+    total_price = models.DecimalField(max_digits=10, decimal_places=3, verbose_name="Prix total (TND)")
+    
+    status = models.CharField(max_length=20, choices=BOOKING_STATUS, default='PENDING')
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name="Date de réservation")
+    
+    def __str__(self):
+        return f"Réservation {self.id} - {self.guest_name} @ {self.room.get_room_type_display()}"
+    
+    class Meta:
+        verbose_name = "Réservation Hôtel"
+        verbose_name_plural = "Réservations Hôtel"
+        ordering = ['-created_at']

@@ -39,7 +39,7 @@
             </div>
 
             <div class="d-grid gap-2 d-md-block">
-                <a href="{% url 'hotel_list' %}" class="btn btn-primary btn-lg rounded-pill px-5 me-md-2">
+                <a href="{% url 'hotels:hotel_list' %}" class="btn btn-primary btn-lg rounded-pill px-5 me-md-2">
                     {% if LANGUAGE_CODE == 'ar' %}العودة للرئيسية{% else %}Accueil{% endif %}
                 </a>
                 <button onclick="window.print()" class="btn btn-outline-secondary btn-lg rounded-pill px-5">

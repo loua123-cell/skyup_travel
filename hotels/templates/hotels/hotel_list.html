@@ -364,7 +364,7 @@
             {% trans "Filtrer votre recherche" %}
         </h3>
         
-        <form method="GET" action="{% url 'hotel_list' %}" class="filter-form">
+        <form method="GET" action="{% url 'hotels:hotel_list' %}" class="filter-form">
             <div class="filter-group">
                 <label for="search">
                     <i class="fas fa-search"></i>
@@ -470,7 +470,7 @@
                         <span class="price-amount">{{ hotel.price_per_night|floatformat:0 }} TND</span>
                         <span class="price-label">{% trans "par nuit" %}</span>
                     </div>
-                    <a href="{% url 'hotel_detail' hotel.pk %}" class="hotel-btn">
+                    <a href="{% url 'hotels:hotel_detail' hotel.pk %}" class="hotel-btn">
                         {% trans "Réserver" %}
                         <i class="fas fa-arrow-right"></i>
                     </a>

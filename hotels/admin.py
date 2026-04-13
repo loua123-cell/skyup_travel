@@ -1,6 +1,6 @@
 # hotels/admin.py
 from django.contrib import admin
-from .models import Hotel, Room, SeasonalPrice, RoomImage
+from .models import Hotel, Room, SeasonalPrice, RoomImage, HotelBooking
 
 @admin.register(Hotel)
 class HotelAdmin(admin.ModelAdmin):
@@ -38,3 +38,29 @@ class RoomAdmin(admin.ModelAdmin):
     
     # Intégration des prix saisonniers et des images dans la même interface
     inlines = [SeasonalPriceInline, RoomImageInline]
+
+@admin.register(HotelBooking)
+class HotelBookingAdmin(admin.ModelAdmin):
+    list_display = ('id', 'guest_name', 'room', 'check_in_date', 'check_out_date', 'total_price', 'status')
+    list_filter = ('status', 'created_at', 'room__hotel')
+    search_fields = ('guest_name', 'guest_email', 'guest_phone')
+    readonly_fields = ('created_at', 'total_price')
+    
+    fieldsets = (
+        ('Informations Clients', {
+            'fields': ('guest_name', 'guest_email', 'guest_phone')
+        }),
+        ('Réservation', {
+            'fields': ('room', 'check_in_date', 'check_out_date')
+        }),
+        ('Occupants', {
+            'fields': ('number_of_adults', 'number_of_children', 'number_of_babies')
+        }),
+        ('Paiement et Statut', {
+            'fields': ('total_price', 'status')
+        }),
+        ('Audit', {
+            'fields': ('created_at',),
+            'classes': ('collapse',)
+        }),
+    )

@@ -89,7 +89,7 @@
         <h4 class="text-muted">
             {% if LANGUAGE_CODE == 'ar' %}لا توجد حجوزات بعد{% elif LANGUAGE_CODE == 'fr' %}Aucune réservation trouvée{% else %}No bookings found{% endif %}
         </h4>
-        <a href="{% url 'hotel_list' %}" class="btn btn-primary mt-3 rounded-pill px-4 fw-bold shadow-sm">
+        <a href="{% url 'hotels:hotel_list' %}" class="btn btn-primary mt-3 rounded-pill px-4 fw-bold shadow-sm">
             {% if LANGUAGE_CODE == 'ar' %}ابدأ رحلتك الآن{% elif LANGUAGE_CODE == 'fr' %}Réserver maintenant{% else %}Start your journey{% endif %}
         </a>
     </div>

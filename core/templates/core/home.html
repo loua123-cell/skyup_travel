@@ -599,7 +599,7 @@
         <div class="service-icon">🏨</div>
         <h3>{% trans "Hôtels" %}</h3>
         <p>{% trans "Découvrez une large sélection d'hôtels luxueux et économiques dans le monde entier." %}</p>
-        <a href="{% url 'hotel_list' %}" class="service-link">{% trans "Explorer" %} →</a>
+        <a href="{% url 'hotels:hotel_list' %}" class="service-link">{% trans "Explorer" %} →</a>
       </div>
       
       <div class="service-card">
@@ -659,7 +659,7 @@
               {% endif %}
             </div>
             <div class="hotel-price">{{ hotel.price_per_night }} TND/{% trans "nuit" %}</div>
-            <a href="{% url 'hotel_detail' hotel.id %}" class="view-hotel-btn">{% trans "Voir les Détails" %} →</a>
+            <a href="{% url 'hotels:hotel_detail' hotel.id %}" class="view-hotel-btn">{% trans "Voir les Dtails" %} →</a>
           </div>
         </div>
       </div>
