@@ -1,541 +1,594 @@
-{% extends 'base.html' %}
-{% load i18n %}
-
-{% block content %}
+{% extends 'base.html' %} {% load i18n %} {% block content %}
 <style>
-    /* Header Section */
-    .flights-header {
-        background: linear-gradient(135deg, #1E3A8A 0%, #3B82F6 100%);
-        color: white;
-        padding: 60px 20px;
-        width: 100vw;
-        margin-left: calc(-50vw + 50%);
-        margin-top: -24px;
-        margin-bottom: 40px;
-        border-bottom: 3px solid #F59E0B;
-    }
+  /* Header Section */
+  .flights-header {
+    background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+    color: white;
+    padding: 60px 20px;
+    width: 100vw;
+    margin-left: calc(-50vw + 50%);
+    margin-top: -24px;
+    margin-bottom: 40px;
+    border-bottom: 3px solid #f59e0b;
+  }
 
-    .header-content {
-        max-width: 1200px;
-        margin: 0 auto;
-    }
+  .header-content {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
 
-    .header-title {
-        font-size: 3rem;
-        font-weight: 700;
-        margin-bottom: 10px;
-        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
-    }
+  .header-title {
+    font-size: 3rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+  }
 
-    .header-subtitle {
-        font-size: 1.2rem;
-        opacity: 0.95;
-        font-weight: 300;
-    }
+  .header-subtitle {
+    font-size: 1.2rem;
+    opacity: 0.95;
+    font-weight: 300;
+  }
 
-    /* Main Layout */
+  /* Main Layout */
+  .flights-container {
+    display: grid;
+    grid-template-columns: 320px 1fr;
+    gap: 30px;
+    margin-bottom: 50px;
+  }
+
+  /* Sidebar Filter */
+  .filter-sidebar {
+    background: white;
+    border-radius: 16px;
+    padding: 25px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+    border: 1px solid #e5e7eb;
+    height: fit-content;
+    position: sticky;
+    top: 100px;
+  }
+
+  .filter-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #1e3a8a;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .filter-title i {
+    color: #f59e0b;
+  }
+
+  .filter-group {
+    margin-bottom: 25px;
+  }
+
+  .filter-group label {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #1e3a8a;
+    margin-bottom: 12px;
+    display: block;
+  }
+
+  .filter-group.price-range {
+    margin-bottom: 25px;
+  }
+
+  .price-inputs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .price-inputs input {
+    padding: 10px 12px;
+    border: 2px solid #e5e7eb;
+    border-radius: 10px;
+    font-size: 0.9rem;
+    color: #1e3a8a;
+    transition: all 0.3s ease;
+  }
+
+  .price-inputs input:focus {
+    border-color: #f59e0b;
+    box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.1);
+    outline: none;
+  }
+
+  .filter-group .form-check {
+    margin-bottom: 10px;
+  }
+
+  .form-check-input {
+    width: 18px;
+    height: 18px;
+    border: 2px solid #e5e7eb;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .form-check-input:checked {
+    background-color: #f59e0b;
+    border-color: #f59e0b;
+  }
+
+  .form-check-label {
+    color: #1e3a8a;
+    font-weight: 500;
+    cursor: pointer;
+    margin-left: 8px;
+    font-size: 0.95rem;
+  }
+
+  .apply-filters-btn {
+    width: 100%;
+    background: linear-gradient(135deg, #f59e0b 0%, #ff9a3d 100%);
+    color: white;
+    border: none;
+    padding: 12px;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 1rem;
+  }
+
+  .apply-filters-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(245, 158, 11, 0.3);
+  }
+
+  /* Results Section */
+  .results-section {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .results-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 25px;
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: #1e3a8a;
+  }
+
+  .results-count {
+    background: linear-gradient(135deg, #f59e0b 0%, #ff9a3d 100%);
+    color: white;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-weight: 700;
+  }
+
+  /* Flight Card */
+  .flight-card {
+    background: white;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+    border: 1px solid #e5e7eb;
+    transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+    margin-bottom: 20px;
+  }
+
+  .flight-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.12);
+  }
+
+  .flight-card-body {
+    padding: 25px;
+  }
+
+  .flight-details-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+    gap: 20px;
+    align-items: center;
+  }
+
+  .flight-section {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .airline-info {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .airline-name {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #1e3a8a;
+  }
+
+  .flight-number {
+    font-size: 0.85rem;
+    color: #999;
+    font-weight: 500;
+  }
+
+  .departure-arrival {
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .time {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #1e3a8a;
+    line-height: 1;
+  }
+
+  .city {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #1e3a8a;
+    margin-top: 6px;
+  }
+
+  .date {
+    font-size: 0.85rem;
+    color: #999;
+    margin-top: 4px;
+  }
+
+  .flight-duration {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .flight-type {
+    font-size: 0.8rem;
+    font-weight: 600;
+    background: #f3f4f6;
+    color: #1e3a8a;
+    padding: 6px 12px;
+    border-radius: 20px;
+    text-transform: uppercase;
+  }
+
+  .flight-type.direct {
+    background: #d1fae5;
+    color: #065f46;
+  }
+
+  .flight-type.stops {
+    background: #fef3c7;
+    color: #92400e;
+  }
+
+  .plane-icon {
+    font-size: 1.5rem;
+    color: #3b82f6;
+  }
+
+  .flight-price-section {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    border-left: 2px solid #e5e7eb;
+    padding-left: 20px;
+  }
+
+  .price-amount {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #f59e0b;
+  }
+
+  .seats-info {
+    font-size: 0.9rem;
+    color: #dc2626;
+    font-weight: 600;
+  }
+
+  .select-flight-btn {
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    color: white;
+    border: none;
+    padding: 10px 18px;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+  }
+
+  .select-flight-btn:hover {
+    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(59, 130, 246, 0.3);
+    text-decoration: none;
+    color: white;
+  }
+
+  /* Empty State */
+  .empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    background: white;
+    border-radius: 16px;
+    border: 2px dashed #e5e7eb;
+  }
+
+  .empty-state-icon {
+    font-size: 4rem;
+    color: #d1d5db;
+    margin-bottom: 20px;
+  }
+
+  .empty-state-text {
+    font-size: 1.3rem;
+    color: #999;
+    font-weight: 500;
+  }
+
+  /* Responsive */
+  @media (max-width: 1024px) {
     .flights-container {
-        display: grid;
-        grid-template-columns: 320px 1fr;
-        gap: 30px;
-        margin-bottom: 50px;
+      grid-template-columns: 1fr;
     }
 
-    /* Sidebar Filter */
     .filter-sidebar {
-        background: white;
-        border-radius: 16px;
-        padding: 25px;
-        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
-        border: 1px solid #E5E7EB;
-        height: fit-content;
-        position: sticky;
-        top: 100px;
-    }
-
-    .filter-title {
-        font-size: 1.25rem;
-        font-weight: 700;
-        color: #1E3A8A;
-        margin-bottom: 20px;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-    }
-
-    .filter-title i {
-        color: #F59E0B;
-    }
-
-    .filter-group {
-        margin-bottom: 25px;
-    }
-
-    .filter-group label {
-        font-size: 0.95rem;
-        font-weight: 600;
-        color: #1E3A8A;
-        margin-bottom: 12px;
-        display: block;
-    }
-
-    .filter-group.price-range {
-        margin-bottom: 25px;
-    }
-
-    .price-inputs {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 10px;
-    }
-
-    .price-inputs input {
-        padding: 10px 12px;
-        border: 2px solid #E5E7EB;
-        border-radius: 10px;
-        font-size: 0.9rem;
-        color: #1E3A8A;
-        transition: all 0.3s ease;
-    }
-
-    .price-inputs input:focus {
-        border-color: #F59E0B;
-        box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.1);
-        outline: none;
-    }
-
-    .filter-group .form-check {
-        margin-bottom: 10px;
-    }
-
-    .form-check-input {
-        width: 18px;
-        height: 18px;
-        border: 2px solid #E5E7EB;
-        cursor: pointer;
-        transition: all 0.3s ease;
-    }
-
-    .form-check-input:checked {
-        background-color: #F59E0B;
-        border-color: #F59E0B;
-    }
-
-    .form-check-label {
-        color: #1E3A8A;
-        font-weight: 500;
-        cursor: pointer;
-        margin-left: 8px;
-        font-size: 0.95rem;
-    }
-
-    .apply-filters-btn {
-        width: 100%;
-        background: linear-gradient(135deg, #F59E0B 0%, #ff9a3d 100%);
-        color: white;
-        border: none;
-        padding: 12px;
-        border-radius: 10px;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        font-size: 1rem;
-    }
-
-    .apply-filters-btn:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 20px rgba(245, 158, 11, 0.3);
-    }
-
-    /* Results Section */
-    .results-section {
-        display: flex;
-        flex-direction: column;
-    }
-
-    .results-header {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        margin-bottom: 25px;
-        font-size: 1.3rem;
-        font-weight: 600;
-        color: #1E3A8A;
-    }
-
-    .results-count {
-        background: linear-gradient(135deg, #F59E0B 0%, #ff9a3d 100%);
-        color: white;
-        padding: 6px 14px;
-        border-radius: 20px;
-        font-weight: 700;
-    }
-
-    /* Flight Card */
-    .flight-card {
-        background: white;
-        border-radius: 16px;
-        overflow: hidden;
-        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
-        border: 1px solid #E5E7EB;
-        transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
-        margin-bottom: 20px;
-    }
-
-    .flight-card:hover {
-        transform: translateY(-8px);
-        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.12);
-    }
-
-    .flight-card-body {
-        padding: 25px;
+      position: relative;
+      top: 0;
     }
 
     .flight-details-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr 1fr 1fr;
-        gap: 20px;
-        align-items: center;
+      grid-template-columns: 1fr 1fr 1fr;
+      font-size: 2rem;
     }
 
-    .flight-section {
-        display: flex;
-        flex-direction: column;
-        gap: 8px;
+    .header-subtitle {
+      font-size: 1rem;
     }
 
-    .airline-info {
-        display: flex;
-        flex-direction: column;
-        gap: 6px;
+    .flight-details-grid {
+      grid-template-columns: 1fr;
+      gap: 12px;
     }
 
-    .airline-name {
-        font-size: 1.1rem;
-        font-weight: 700;
-        color: #1E3A8A;
-    }
-
-    .flight-number {
-        font-size: 0.85rem;
-        color: #999;
-        font-weight: 500;
-    }
-
-    .departure-arrival {
-        display: flex;
-        flex-direction: column;
-        text-align: center;
-    }
-
-    .time {
-        font-size: 1.8rem;
-        font-weight: 700;
-        color: #1E3A8A;
-        line-height: 1;
-    }
-
-    .city {
-        font-size: 1rem;
-        font-weight: 700;
-        color: #1E3A8A;
-        margin-top: 6px;
-    }
-
-    .date {
-        font-size: 0.85rem;
-        color: #999;
-        margin-top: 4px;
-    }
-
-    .flight-duration {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 10px;
-    }
-
-    .flight-type {
-        font-size: 0.8rem;
-        font-weight: 600;
-        background: #F3F4F6;
-        color: #1E3A8A;
-        padding: 6px 12px;
-        border-radius: 20px;
-        text-transform: uppercase;
-    }
-
-    .flight-type.direct {
-        background: #D1FAE5;
-        color: #065F46;
-    }
-
-    .flight-type.stops {
-        background: #FEF3C7;
-        color: #92400E;
-    }
-
-    .plane-icon {
-        font-size: 1.5rem;
-        color: #3B82F6;
+    .flight-card-body {
+      padding: 15px;
     }
 
     .flight-price-section {
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-        border-left: 2px solid #E5E7EB;
-        padding-left: 20px;
+      border-left: none;
+      border-top: 2px solid #e5e7eb;
+      padding-left: 0;
+      padding-top: 15px;
+    }
+
+    .time {
+      font-size: 1.4rem;
     }
 
     .price-amount {
-        font-size: 1.8rem;
-        font-weight: 700;
-        color: #F59E0B;
+      font-size: 1.5rem;
     }
-
-    .seats-info {
-        font-size: 0.9rem;
-        color: #DC2626;
-        font-weight: 600;
-    }
-
-    .select-flight-btn {
-        background: linear-gradient(135deg, #3B82F6 0%, #2563EB 100%);
-        color: white;
-        border: none;
-        padding: 10px 18px;
-        border-radius: 10px;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        text-decoration: none;
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        white-space: nowrap;
-    }
-
-    .select-flight-btn:hover {
-        background: linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%);
-        transform: translateY(-2px);
-        box-shadow: 0 8px 20px rgba(59, 130, 246, 0.3);
-        text-decoration: none;
-        color: white;
-    }
-
-    /* Empty State */
-    .empty-state {
-        text-align: center;
-        padding: 60px 20px;
-        background: white;
-        border-radius: 16px;
-        border: 2px dashed #E5E7EB;
-    }
-
-    .empty-state-icon {
-        font-size: 4rem;
-        color: #D1D5DB;
-        margin-bottom: 20px;
-    }
-
-    .empty-state-text {
-        font-size: 1.3rem;
-        color: #999;
-        font-weight: 500;
-    }
-
-    /* Responsive */
-    @media (max-width: 1024px) {
-        .flights-container {
-            grid-template-columns: 1fr;
-        }
-
-        .filter-sidebar {
-            position: relative;
-            top: 0;
-        }
-
-        .flight-details-grid {
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-        }
-    }
-
-    @media (max-width: 768px) {
-        .flights-header {
-            margin-top: -16px;
-            padding: 40px 20px;
-        }
-
-        .header-title {
-            font-size: 2rem;
-        }
-
-        .header-subtitle {
-            font-size: 1rem;
-        }
-
-        .flight-details-grid {
-            grid-template-columns: 1fr;
-            gap: 12px;
-        }
-
-        .flight-card-body {
-            padding: 15px;
-        }
-
-        .flight-price-section {
-            border-left: none;
-            border-top: 2px solid #E5E7EB;
-            padding-left: 0;
-            padding-top: 15px;
-        }
-
-        .time {
-            font-size: 1.4rem;
-        }
-
-        .price-amount {
-            font-size: 1.5rem;
-        }
-    }
+  }
 </style>
 
 <!-- Header Section -->
 <div class="flights-header">
-    <div class="header-content">
-        <h1 class="header-title">
-            ✈️ {% trans "Trouvez votre vol parfait" %}
-        </h1>
-        <p class="header-subtitle">
-            {% trans "Découvrez les meilleures offres de vols avec les meilleures compagnies aériennes" %}
-        </p>
-    </div>
+  <div class="header-content">
+    <h1 class="header-title">✈️ {% trans "Trouvez votre vol parfait" %}</h1>
+    <p class="header-subtitle">
+      {% trans "Découvrez les meilleures offres de vols avec les meilleures
+      compagnies aériennes" %}
+    </p>
+  </div>
 </div>
 
 <div class="container">
-    <div class="flights-container">
-        <!-- Sidebar Filter -->
-        <aside class="filter-sidebar">
-            <h3 class="filter-title">
-                <i class="fas fa-sliders-h"></i>
-                {% trans "Filtres" %}
-            </h3>
+  <div class="flights-container">
+    <!-- Sidebar Filter -->
+    <aside class="filter-sidebar">
+      <h3 class="filter-title">
+        <i class="fas fa-sliders-h"></i>
+        {% trans "Filtres" %}
+      </h3>
 
-            <form method="GET" action="{% url 'flight_search' %}">
-                <!-- Price Range Filter -->
-                <div class="filter-group price-range">
-                    <label>{% trans "Budget total (TND)" %}</label>
-                    <div class="price-inputs">
-                        <input type="number" name="min_p" class="form-control" placeholder="{% trans 'Min' %}" value="{{ query_params.min_p }}">
-                        <input type="number" name="max_p" class="form-control" placeholder="{% trans 'Max' %}" value="{{ query_params.max_p }}">
-                    </div>
+      <form method="GET" action="{% url 'flight_search' %}">
+        <!-- Price Range Filter -->
+        <div class="filter-group price-range">
+          <label>{% trans "Budget total (TND)" %}</label>
+          <div class="price-inputs">
+            <input
+              type="number"
+              name="min_p"
+              class="form-control"
+              placeholder="{% trans 'Min' %}"
+              value="{{ query_params.min_p }}"
+            />
+            <input
+              type="number"
+              name="max_p"
+              class="form-control"
+              placeholder="{% trans 'Max' %}"
+              value="{{ query_params.max_p }}"
+            />
+          </div>
+        </div>
+
+        <!-- Flight Type Filter -->
+        <div class="filter-group">
+          <label>{% trans "Type de Vol" %}</label>
+
+          <div class="form-check">
+            <input
+              class="form-check-input"
+              type="radio"
+              name="type"
+              value="all"
+              id="t1"
+              {%
+              if
+              query_params.type
+              !="direct"
+              and
+              query_params.type
+              !="escale"
+              %}checked{%
+              endif
+              %}
+            />
+            <label class="form-check-label" for="t1">{% trans "Tous" %}</label>
+          </div>
+
+          <div class="form-check">
+            <input
+              class="form-check-input"
+              type="radio"
+              name="type"
+              value="direct"
+              id="t2"
+              {%
+              if
+              query_params.type=""
+              ="direct"
+              %}checked{%
+              endif
+              %}
+            />
+            <label class="form-check-label" for="t2"
+              >{% trans "Direct" %}</label
+            >
+          </div>
+
+          <div class="form-check">
+            <input
+              class="form-check-input"
+              type="radio"
+              name="type"
+              value="escale"
+              id="t3"
+              {%
+              if
+              query_params.type=""
+              ="escale"
+              %}checked{%
+              endif
+              %}
+            />
+            <label class="form-check-label" for="t3"
+              >{% trans "1 escale ou plus" %}</label
+            >
+          </div>
+        </div>
+
+        <button type="submit" class="apply-filters-btn">
+          <i class="fas fa-filter me-2"></i>
+          {% trans "Appliquer les filtres" %}
+        </button>
+      </form>
+    </aside>
+
+    <!-- Results Section -->
+    <main class="results-section">
+      <div class="results-header">
+        <i class="fas fa-list"></i>
+        <span class="results-count">{{ count }}</span>
+        <span>{% trans "Vol(s) trouvé(s)" %}</span>
+      </div>
+
+      {% for vol in vols %}
+      <div class="flight-card">
+        <div class="flight-card-body">
+          <div class="flight-details-grid">
+            <!-- Airline Info -->
+            <div class="flight-section">
+              <div class="airline-info">
+                <div class="airline-name">{{ vol.airline }}</div>
+                <div class="flight-number">
+                  {% trans "Vol" %} #{{ vol.flight_number }}
                 </div>
-
-                <!-- Flight Type Filter -->
-                <div class="filter-group">
-                    <label>{% trans "Type de Vol" %}</label>
-                    
-                    <div class="form-check">
-                        <input class="form-check-input" type="radio" name="type" value="all" id="t1" {% if query_params.type != 'direct' and query_params.type != 'escale' %}checked{% endif %}>
-                        <label class="form-check-label" for="t1">{% trans "Tous" %}</label>
-                    </div>
-
-                    <div class="form-check">
-                        <input class="form-check-input" type="radio" name="type" value="direct" id="t2" {% if query_params.type == 'direct' %}checked{% endif %}>
-                        <label class="form-check-label" for="t2">{% trans "Direct" %}</label>
-                    </div>
-
-                    <div class="form-check">
-                        <input class="form-check-input" type="radio" name="type" value="escale" id="t3" {% if query_params.type == 'escale' %}checked{% endif %}>
-                        <label class="form-check-label" for="t3">{% trans "1 escale ou plus" %}</label>
-                    </div>
-                </div>
-
-                <button type="submit" class="apply-filters-btn">
-                    <i class="fas fa-filter me-2"></i>
-                    {% trans "Appliquer les filtres" %}
-                </button>
-            </form>
-        </aside>
-
-        <!-- Results Section -->
-        <main class="results-section">
-            <div class="results-header">
-                <i class="fas fa-list"></i>
-                <span class="results-count">{{ count }}</span>
-                <span>{% trans "Vol(s) trouvé(s)" %}</span>
+              </div>
             </div>
 
-            {% for vol in vols %}
-            <div class="flight-card">
-                <div class="flight-card-body">
-                    <div class="flight-details-grid">
-                        <!-- Airline Info -->
-                        <div class="flight-section">
-                            <div class="airline-info">
-                                <div class="airline-name">{{ vol.airline }}</div>
-                                <div class="flight-number">{% trans "Vol" %} #{{ vol.flight_number }}</div>
-                            </div>
-                        </div>
-
-                        <!-- Departure -->
-                        <div class="flight-section">
-                            <div class="departure-arrival">
-                                <div class="time">{{ vol.departure_time|date:"H:i" }}</div>
-                                <div class="city">{{ vol.departure_airport.city }}</div>
-                                <div class="date">{{ vol.departure_time|date:"D. d/m/Y" }}</div>
-                            </div>
-                        </div>
-
-                        <!-- Duration & Type -->
-                        <div class="flight-section">
-                            <div class="flight-duration">
-                                <div class="flight-type {% if vol.is_direct %}direct{% else %}stops{% endif %}">
-                                    {% if vol.is_direct %}
-                                        {% trans "Direct" %}
-                                    {% else %}
-                                        {{ vol.stops_count }} {% trans "Escale(s)" %}
-                                    {% endif %}
-                                </div>
-                                <div class="plane-icon">
-                                    <i class="fas fa-plane"></i>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Price & Action -->
-                        <div class="flight-section">
-                            <div class="flight-price-section">
-                                <div>
-                                    <div class="price-amount">{{ vol.price }} TND</div>
-                                    <div class="seats-info">
-                                        <i class="fas fa-chair me-1"></i>
-                                        {{ vol.seats_remaining }} {% trans "restant(s)" %}
-                                    </div>
-                                </div>
-                                <a href="#" class="select-flight-btn">
-                                    {% trans "Sélectionner" %}
-                                    <i class="fas fa-arrow-right"></i>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+            <!-- Departure -->
+            <div class="flight-section">
+              <div class="departure-arrival">
+                <div class="time">{{ vol.departure_time|date:"H:i" }}</div>
+                <div class="city">{{ vol.departure_airport.city }}</div>
+                <div class="date">{{ vol.departure_time|date:"D. d/m/Y" }}</div>
+              </div>
             </div>
-            {% empty %}
-            <div class="empty-state">
-                <div class="empty-state-icon">
-                    <i class="fas fa-search"></i>
-                </div>
-                <p class="empty-state-text">
-                    {% trans "Aucun vol ne correspond à votre recherche." %}
-                </p>
+
+            <!-- Arrival -->
+            <div class="flight-section">
+              <div class="departure-arrival">
+                <div class="time">{{ vol.arrival_time|date:"H:i" }}</div>
+                <div class="city">{{ vol.arrival_airport.city }}</div>
+                <div class="date">{{ vol.arrival_time|date:"D. d/m/Y" }}</div>
+              </div>
             </div>
-            {% endfor %}
-        </main>
-    </div>
+
+            <!-- Duration & Type -->
+            <div class="flight-section">
+              <div class="flight-duration">
+                <div
+                  class="flight-type {% if vol.is_direct %}direct{% else %}stops{% endif %}"
+                >
+                  {% if vol.is_direct %} {% trans "Direct" %} {% else %} {{
+                  vol.stops_count }} {% trans "Escale(s)" %} {% endif %}
+                </div>
+                <div class="plane-icon">
+                  <i class="fas fa-plane"></i>
+                </div>
+              </div>
+            </div>
+
+            <!-- Price & Action -->
+            <div class="flight-section">
+              <div class="flight-price-section">
+                <div>
+                  <div class="price-amount">{{ vol.price }} TND</div>
+                  <div class="seats-info">
+                    <i class="fas fa-chair me-1"></i>
+                    {{ vol.seats_remaining }} {% trans "restant(s)" %}
+                  </div>
+                </div>
+                <a href="#" class="select-flight-btn">
+                  {% trans "Sélectionner" %}
+                  <i class="fas fa-arrow-right"></i>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% empty %}
+      <div class="empty-state">
+        <div class="empty-state-icon">
+          <i class="fas fa-search"></i>
+        </div>
+        <p class="empty-state-text">
+          {% trans "Aucun vol ne correspond à votre recherche." %}
+        </p>
+      </div>
+      {% endfor %}
+    </main>
+  </div>
 </div>
 
 {% endblock %}
